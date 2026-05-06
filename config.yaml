@@ -1,0 +1,11 @@
+paths:
+  raw_papers: data/raw/arxiv_papers.json
+  ranked_papers: data/processed/ranked_papers.json
+  report: outputs/reports/daily_briefing.md
+  figures_dir: outputs/figures
+
+defaults:
+  date_range: last 7 days
+  max_results: 50
+  top_k: 5
+  ranking_method: tfidf

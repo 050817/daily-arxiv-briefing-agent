@@ -1,0 +1,30 @@
+{
+  "ranked_papers": [
+    {
+      "title": "Graph Neural Networks for Social Misinformation Detection",
+      "authors": ["A. Researcher", "B. Scientist"],
+      "abstract": "This paper studies graph neural networks for misinformation detection in social networks.",
+      "published_date": "2026-05-01",
+      "arxiv_id": "2605.00001",
+      "url": "https://arxiv.org/abs/2605.00001",
+      "categories": ["cs.SI", "cs.LG"],
+      "relevance_score": 0.95,
+      "rank": 1,
+      "ranking_reason": "Matches the query topic directly."
+    }
+  ],
+  "top_k_papers": [
+    {
+      "title": "Graph Neural Networks for Social Misinformation Detection",
+      "authors": ["A. Researcher", "B. Scientist"],
+      "abstract": "This paper studies graph neural networks for misinformation detection in social networks.",
+      "published_date": "2026-05-01",
+      "arxiv_id": "2605.00001",
+      "url": "https://arxiv.org/abs/2605.00001",
+      "categories": ["cs.SI", "cs.LG"],
+      "relevance_score": 0.95,
+      "rank": 1,
+      "ranking_reason": "Matches the query topic directly."
+    }
+  ]
+}
