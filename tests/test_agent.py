@@ -3,6 +3,12 @@ from __future__ import annotations
 import unittest
 
 from agent.orchestrator import DailyArxivBriefingAgent
+from agent.schema import SkillNotImplementedError
+
+
+class MissingRetrievalSkill:
+    def run(self, input_data):
+        raise SkillNotImplementedError("PaperRetrievalSkill.run() is intentionally unavailable for this test.")
 
 
 class FakeRetrievalSkill:
@@ -40,13 +46,14 @@ class FakeBriefingSkill:
 
 
 class DailyArxivBriefingAgentTest(unittest.TestCase):
-    def test_empty_first_skill_stops_cleanly(self):
+    def test_missing_first_skill_stops_cleanly(self):
         agent = DailyArxivBriefingAgent()
+        agent.retrieval_skill = MissingRetrievalSkill()
         result = agent.run({"query": "graph neural networks"}, stop_after="retrieval")
 
         self.assertEqual(result["status"], "partial")
         self.assertEqual(result["completed_stages"], [])
-        self.assertIn("PaperRetrievalSkill.run() is empty", result["message"])
+        self.assertIn("intentionally unavailable", result["message"])
 
     def test_can_stop_after_retrieval_when_later_skills_are_missing(self):
         agent = DailyArxivBriefingAgent()

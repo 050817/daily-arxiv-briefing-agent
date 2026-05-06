@@ -9,3 +9,8 @@ defaults:
   max_results: 50
   top_k: 5
   ranking_method: tfidf
+
+retrieval:
+  request_timeout_seconds: 30
+  max_retries: 2
+  retry_backoff_seconds: 1

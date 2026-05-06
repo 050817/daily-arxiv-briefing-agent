@@ -1,8 +1,8 @@
 # Daily arXiv Research Briefing Agent
 
-This repository contains the basic workflow architecture for a three-skill AI Agent that generates daily arXiv research briefings for social network analysis, graph learning, and related topics.
+This repository contains the workflow architecture for a three-skill AI Agent that generates daily arXiv research briefings for social network analysis, graph learning, and related topics.
 
-The Skill implementations are intentionally left empty for now. The workflow, CLI interfaces, data contracts, and stage-by-stage experiment paths are already prepared, so each team member can fill one Skill independently and test it without waiting for later Skills to be completed.
+Skill 1 (paper retrieval) is implemented and can already fetch recent arXiv metadata. Skills 2 and 3 are still scaffolds, so the workflow can be exercised end-to-end up to the first unimplemented downstream stage.
 
 ## Repository Structure
 
@@ -67,7 +67,7 @@ python main.py \
   --top_k 5
 ```
 
-Because the Skills are currently empty, the command will stop cleanly at the first unimplemented Skill and return a structured JSON message with status `partial`.
+Because Skills 2 and 3 are still empty, the command will stop cleanly at the first unimplemented downstream Skill and return a structured JSON message with status `partial`.
 
 ## Stage-by-Stage Experiments
 
@@ -133,7 +133,7 @@ python skills/briefing_graph/skill.py \
   --output outputs/reports/daily_briefing.md
 ```
 
-Each Skill currently returns `status: not_implemented`. After implementing a Skill's `run()` method, the same command should produce that Skill's real output.
+Skills 2 and 3 currently return `status: not_implemented`. Skill 1 now produces real paper metadata output from arXiv.
 
 ## Expected Data Contracts
 
@@ -174,6 +174,12 @@ outputs/reports/daily_briefing.md
 outputs/figures/
 ```
 
+Skill 1 request reliability can also be tuned in `config.yaml` through:
+
+- `retrieval.request_timeout_seconds`
+- `retrieval.max_retries`
+- `retrieval.retry_backoff_seconds`
+
 ## Run Tests
 
 Run the integration contract tests:
@@ -184,7 +190,7 @@ python -m unittest tests.test_agent
 
 The tests verify that:
 
-- empty Skills stop the workflow cleanly;
+- missing Skills stop the workflow cleanly;
 - earlier stages can be tested even when later Skills are missing;
 - the full pipeline contract works after all Skills are filled.
 
