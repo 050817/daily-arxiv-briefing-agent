@@ -2,7 +2,7 @@
 
 This repository contains the workflow architecture for a three-skill AI Agent that generates daily arXiv research briefings for social network analysis, graph learning, and related topics.
 
-Skill 1 (paper retrieval) is implemented and can already fetch recent arXiv metadata. Skills 2 and 3 are still scaffolds, so the workflow can be exercised end-to-end up to the first unimplemented downstream stage.
+Skill 1 (paper retrieval) is implemented and can already fetch recent arXiv metadata. Skill 2 (relevance ranking) is also implemented with a lightweight TF-IDF baseline. Skill 3 is still a scaffold, so the workflow can be exercised end-to-end up to the briefing stage.
 
 ## Repository Structure
 
@@ -53,7 +53,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-At the moment, the workflow skeleton only requires `pyyaml`. Future Skill implementations may add packages such as `arxiv`, `scikit-learn`, `sentence-transformers`, `networkx`, and `matplotlib`.
+At the moment, the implemented workflow only requires `pyyaml`. Skill 2 uses a pure-Python TF-IDF baseline, so no extra ranking dependency is required. Future Skill implementations may add packages such as `arxiv`, `scikit-learn`, `sentence-transformers`, `networkx`, and `matplotlib`.
 
 ## Run the Workflow
 
@@ -67,7 +67,7 @@ python main.py \
   --top_k 5
 ```
 
-Because Skills 2 and 3 are still empty, the command will stop cleanly at the first unimplemented downstream Skill and return a structured JSON message with status `partial`.
+Because Skill 3 is still empty, the command will complete retrieval and ranking, then stop cleanly at the unimplemented briefing stage and return a structured JSON message with status `partial`.
 
 ## Stage-by-Stage Experiments
 
@@ -133,7 +133,7 @@ python skills/briefing_graph/skill.py \
   --output outputs/reports/daily_briefing.md
 ```
 
-Skills 2 and 3 currently return `status: not_implemented`. Skill 1 now produces real paper metadata output from arXiv.
+Skill 2 now produces ranked paper metadata and Top-K filtered papers. Skill 3 currently returns `status: not_implemented`.
 
 ## Expected Data Contracts
 
@@ -188,9 +188,15 @@ Run the integration contract tests:
 python -m unittest tests.test_agent
 ```
 
+Run the Skill 2 unit tests:
+
+```bash
+python -m unittest tests.test_relevance_ranking
+```
+
 The tests verify that:
 
-- missing Skills stop the workflow cleanly;
+- missing downstream Skills stop the workflow cleanly;
 - earlier stages can be tested even when later Skills are missing;
 - the full pipeline contract works after all Skills are filled.
 
