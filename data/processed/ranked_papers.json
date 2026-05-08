@@ -1,0 +1,108 @@
+{
+  "ranked_papers": [
+    {
+      "title": "A Case-Driven Multi-Agent Framework for E-Commerce Search Relevance",
+      "authors": [
+        "Global E-Commerce Search Relevance Team"
+      ],
+      "abstract": "Relevance is a foundation of user experience in e-commerce search. We view relevance optimization as a closed-loop ecosystem involving multiple human roles: users who provide feedback, product managers who define standards, annotators who label data, algorithm engineers who optimize models, and evaluators who assess performance. Because improving relevance in practice means systematically resolving user-perceived bad cases, we ask a system-level question: can this ecosystem be reimagined by replacing its human roles with autonomous agents? To answer this question, we propose a case-driven multi-agent framework that automates the pipeline from bad-case identification to resolution. The framework instantiates an Annotator Agent for multi-turn annotation, an Optimizer Agent for autonomous bad-case analysis and resolution, and a User Agent that identifies bad cases through conversational interaction, together forming an autonomous and continually evolving system. To make the framework practical in production, we further adopt a harness-engineering paradigm and build a unified retrieval-and-ranking relevance model for efficient training, an instruction-following relevance model for real-time case resolution, Global Memory to reduce information asymmetry across agents, a Deep Search Agent to target underestimation failures, and an agent-based chatbot for human--agent collaboration. Extensive human evaluation shows that the framework performs relevance-related tasks effectively, improves annotation accuracy, and enables more timely and generalizable bad-case resolution, indicating a practical paradigm for industrial search relevance optimization.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.05991v1",
+      "url": "https://arxiv.org/abs/2605.05991v1",
+      "categories": [
+        "cs.IR"
+      ],
+      "relevance_score": 0.245,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    },
+    {
+      "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+      "authors": [
+        "Jinge Wu",
+        "Hongjian Zhou",
+        "Mingde Zeng",
+        "Jiayuan Zhu",
+        "Junde Wu",
+        "Jiazhen Pan",
+        "Sean Wu",
+        "Honghan Wu",
+        "Fenglin Liu",
+        "David A. Clifton"
+      ],
+      "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that not only alleviates it but also provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. BioMedArena decouples six layers of biomedical agent evaluation -- benchmark loading, tool exposure, tool selection, execution mode, context management, and scoring -- and exposes 147 biomedical benchmarks and 75 biomedical tools across 9 functional families. Adding a new model, benchmark, or tool reduces to registering a few-line provider adapter. We further provide 6 agent harnesses with 6 context-management strategies, which provide 12 backbones with competitive research capabilities and significantly improved performance, achieving state-of-the-art (SOTA) results on 8 representative biomedical benchmarks, with an average lift of +15.03 percentage points over prior SOTA. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.06177v1",
+      "url": "https://arxiv.org/abs/2605.06177v1",
+      "categories": [
+        "cs.AI"
+      ],
+      "relevance_score": 0.1901,
+      "rank": 2,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    },
+    {
+      "title": "Single-photon scattering by a giant molecule asymmetrically coupled to parallel waveguides",
+      "authors": [
+        "Ze-Quan Zhang",
+        "Guang-Zheng Ye",
+        "Wei-Xin Chen",
+        "Yong Li",
+        "Huaizhi Wu"
+      ],
+      "abstract": "We investigate single-photon scattering in a waveguide-QED setup, where a giant molecule composed of two frequency-detuned giant atoms is coupled to two parallel waveguides via multiple connection points. The competition between coherent atom--atom coupling and the effective decay rates dictates the splitting of a single resonance into a doublet in the transmission (reflection) spectra. By tailoring the asymmetry of the decay rates and the atomic detuning, one can engineer photon-path interference to optimize the transfer between waveguides; under chiral coupling conditions, this interference can be further harnessed to realize fully deterministic routing. In the non-Markovian regime, retardation effects can reshape the spectra and actively drive transitions between the weak- and strong-coupling regimes, converting an unsplit Markovian resonance into a clearly separated doublet, or conversely merging a split doublet back into a single resonance. For sufficiently long time delays, it further generates multiple resonances and avoided crossings, enriching the spectral response. Our results demonstrate how atomic detuning, decay-rate asymmetry, and non-Markovian retardation cooperate to provide versatile, interference-based control over single-photon routing in multi-port quantum networks.",
+      "published_date": "2026-05-06",
+      "arxiv_id": "2605.04588v1",
+      "url": "https://arxiv.org/abs/2605.04588v1",
+      "categories": [
+        "quant-ph"
+      ],
+      "relevance_score": 0.086,
+      "rank": 3,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    }
+  ],
+  "top_k_papers": [
+    {
+      "title": "A Case-Driven Multi-Agent Framework for E-Commerce Search Relevance",
+      "authors": [
+        "Global E-Commerce Search Relevance Team"
+      ],
+      "abstract": "Relevance is a foundation of user experience in e-commerce search. We view relevance optimization as a closed-loop ecosystem involving multiple human roles: users who provide feedback, product managers who define standards, annotators who label data, algorithm engineers who optimize models, and evaluators who assess performance. Because improving relevance in practice means systematically resolving user-perceived bad cases, we ask a system-level question: can this ecosystem be reimagined by replacing its human roles with autonomous agents? To answer this question, we propose a case-driven multi-agent framework that automates the pipeline from bad-case identification to resolution. The framework instantiates an Annotator Agent for multi-turn annotation, an Optimizer Agent for autonomous bad-case analysis and resolution, and a User Agent that identifies bad cases through conversational interaction, together forming an autonomous and continually evolving system. To make the framework practical in production, we further adopt a harness-engineering paradigm and build a unified retrieval-and-ranking relevance model for efficient training, an instruction-following relevance model for real-time case resolution, Global Memory to reduce information asymmetry across agents, a Deep Search Agent to target underestimation failures, and an agent-based chatbot for human--agent collaboration. Extensive human evaluation shows that the framework performs relevance-related tasks effectively, improves annotation accuracy, and enables more timely and generalizable bad-case resolution, indicating a practical paradigm for industrial search relevance optimization.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.05991v1",
+      "url": "https://arxiv.org/abs/2605.05991v1",
+      "categories": [
+        "cs.IR"
+      ],
+      "relevance_score": 0.245,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    },
+    {
+      "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+      "authors": [
+        "Jinge Wu",
+        "Hongjian Zhou",
+        "Mingde Zeng",
+        "Jiayuan Zhu",
+        "Junde Wu",
+        "Jiazhen Pan",
+        "Sean Wu",
+        "Honghan Wu",
+        "Fenglin Liu",
+        "David A. Clifton"
+      ],
+      "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that not only alleviates it but also provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. BioMedArena decouples six layers of biomedical agent evaluation -- benchmark loading, tool exposure, tool selection, execution mode, context management, and scoring -- and exposes 147 biomedical benchmarks and 75 biomedical tools across 9 functional families. Adding a new model, benchmark, or tool reduces to registering a few-line provider adapter. We further provide 6 agent harnesses with 6 context-management strategies, which provide 12 backbones with competitive research capabilities and significantly improved performance, achieving state-of-the-art (SOTA) results on 8 representative biomedical benchmarks, with an average lift of +15.03 percentage points over prior SOTA. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.06177v1",
+      "url": "https://arxiv.org/abs/2605.06177v1",
+      "categories": [
+        "cs.AI"
+      ],
+      "relevance_score": 0.1901,
+      "rank": 2,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    }
+  ]
+}

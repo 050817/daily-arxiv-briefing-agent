@@ -37,6 +37,36 @@ STOPWORDS = {
     "to",
     "with",
 }
+GENERIC_CONTEXT_TERMS = {
+    "analysis",
+    "approach",
+    "approaches",
+    "engineering",
+    "method",
+    "methods",
+    "model",
+    "models",
+    "research",
+    "study",
+    "studies",
+    "system",
+    "systems",
+}
+HARNESS_ENGINEERING_CONTEXT_TERMS = {
+    "agent",
+    "agentic",
+    "agents",
+    "architecture",
+    "architectural",
+    "coordination",
+    "runtime",
+    "runtimes",
+    "tool",
+    "toolkit",
+    "tools",
+    "workflow",
+    "workflows",
+}
 
 
 class RelevanceRankingSkill:
@@ -55,6 +85,7 @@ class RelevanceRankingSkill:
         allowed_categories = input_data.get("allowed_categories")
 
         filtered_papers = self.apply_category_filter(papers, allowed_categories)
+        filtered_papers = self.apply_core_query_filter(query, filtered_papers)
         if method == "tfidf":
             ranked_papers = self.rank_with_tfidf(query, filtered_papers)
         elif method == "sbert":
@@ -107,6 +138,10 @@ class RelevanceRankingSkill:
             self._cosine_similarity(query_vector, self._tfidf_vector(tokens, idf))
             for tokens in document_tokens
         ]
+        scores = [
+            score + self._topic_alignment_bonus(query, paper)
+            for score, paper in zip(scores, papers)
+        ]
         return self._attach_ranking_metadata(query, papers, scores)
 
     def rank_with_sbert(self, query: str, papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -134,6 +169,33 @@ class RelevanceRankingSkill:
                 filtered.append(paper)
         return filtered
 
+    def apply_core_query_filter(self, query: str, papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        query_tokens = self._topic_tokens(query)
+        if len(query_tokens) < 2:
+            return list(papers)
+        if not (set(query_tokens) & GENERIC_CONTEXT_TERMS):
+            return list(papers)
+
+        strict_terms = set(query_tokens)
+        strict_matches = self._papers_matching_terms(papers, strict_terms)
+        if strict_matches:
+            return strict_matches
+
+        core_terms = {token for token in query_tokens if token not in GENERIC_CONTEXT_TERMS}
+        if not core_terms:
+            return list(papers)
+
+        matched = self._papers_matching_terms(papers, core_terms)
+        return matched or list(papers)
+
+    def _papers_matching_terms(self, papers: list[dict[str, Any]], terms: set[str]) -> list[dict[str, Any]]:
+        matched = []
+        for paper in papers:
+            paper_terms = set(self._topic_tokens(self.build_document_text(paper, "title_abstract_categories")))
+            if terms <= paper_terms:
+                matched.append(paper)
+        return matched
+
     def select_top_k(self, ranked_papers: list[dict[str, Any]], top_k: int) -> list[dict[str, Any]]:
         if top_k <= 0:
             return []
@@ -143,11 +205,62 @@ class RelevanceRankingSkill:
         save_json(result, output_path or self.paths.get("ranked_papers", "data/processed/ranked_papers.json"))
 
     def _tokenize(self, text: str) -> list[str]:
-        return [
-            token.lower()
-            for token in TOKEN_PATTERN.findall(text)
-            if token.lower() not in STOPWORDS
-        ]
+        return self._topic_tokens(text)
+
+    def _topic_tokens(self, text: str) -> list[str]:
+        normalized_text = text.replace("-", " ").replace("_", " ")
+        tokens = []
+        for token in TOKEN_PATTERN.findall(normalized_text):
+            lowered = token.lower()
+            if lowered in STOPWORDS:
+                continue
+            tokens.append(self._normalize_topic_token(lowered))
+        return tokens
+
+    def _normalize_topic_token(self, token: str) -> str:
+        if token in {"engineer", "engineered", "engineering"}:
+            return "engineering"
+        if token in {"harness", "harnessed", "harnesses"}:
+            return "harness"
+        return token
+
+    def _topic_alignment_bonus(self, query: str, paper: dict[str, Any]) -> float:
+        query_tokens = self._topic_tokens(query)
+        if len(query_tokens) < 2 or not (set(query_tokens) & GENERIC_CONTEXT_TERMS):
+            return 0.0
+
+        query_terms = set(query_tokens)
+        title_tokens = self._topic_tokens(str(paper.get("title", "")))
+        abstract_tokens = self._topic_tokens(str(paper.get("abstract", "")))
+        document_terms = set(title_tokens + abstract_tokens)
+        if not query_terms <= document_terms:
+            return 0.0
+
+        bonus = 0.04
+        if self._contains_phrase(title_tokens, query_tokens):
+            bonus += 0.20
+        elif self._contains_phrase(abstract_tokens, query_tokens):
+            bonus += 0.14
+        elif self._terms_are_near(title_tokens + abstract_tokens, query_terms, window=8):
+            bonus += 0.03
+        if query_terms == {"harness", "engineering"}:
+            context_hits = set(title_tokens + abstract_tokens) & HARNESS_ENGINEERING_CONTEXT_TERMS
+            bonus += min(0.06, 0.015 * len(context_hits))
+        return bonus
+
+    def _contains_phrase(self, tokens: list[str], phrase: list[str]) -> bool:
+        if not tokens or not phrase or len(phrase) > len(tokens):
+            return False
+        phrase_length = len(phrase)
+        return any(tokens[index : index + phrase_length] == phrase for index in range(len(tokens) - phrase_length + 1))
+
+    def _terms_are_near(self, tokens: list[str], terms: set[str], window: int) -> bool:
+        positions = [index for index, token in enumerate(tokens) if token in terms]
+        for start in positions:
+            seen = {token for token in tokens[start : start + window] if token in terms}
+            if terms <= seen:
+                return True
+        return False
 
     def _compute_idf(self, documents: list[list[str]]) -> dict[str, float]:
         document_count = len(documents)

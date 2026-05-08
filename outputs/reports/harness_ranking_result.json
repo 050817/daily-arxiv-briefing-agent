@@ -1,0 +1,38 @@
+{
+  "ranked_papers": [
+    {
+      "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+      "authors": [
+        "S. Researcher"
+      ],
+      "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.06177v1",
+      "url": "https://arxiv.org/abs/2605.06177v1",
+      "categories": [
+        "cs.AI"
+      ],
+      "relevance_score": 0.1417,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    }
+  ],
+  "top_k_papers": [
+    {
+      "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+      "authors": [
+        "S. Researcher"
+      ],
+      "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.06177v1",
+      "url": "https://arxiv.org/abs/2605.06177v1",
+      "categories": [
+        "cs.AI"
+      ],
+      "relevance_score": 0.1417,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+    }
+  ]
+}

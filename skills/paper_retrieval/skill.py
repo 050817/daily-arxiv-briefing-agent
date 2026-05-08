@@ -57,7 +57,20 @@ class PaperRetrievalSkill:
         max_results = max(1, int(input_data.get("max_results", 50)))
         date_range = str(input_data.get("date_range", "last 7 days")).strip()
 
-        raw_papers = self.search_arxiv(query, max_results)
+        try:
+            raw_papers = self.search_arxiv(query, max_results)
+        except RuntimeError as exc:
+            if not self._allow_empty_on_error():
+                raise
+            result = {
+                "papers": [],
+                "retrieval_error": str(exc),
+                "query": query,
+                "date_range": date_range,
+            }
+            self.save_results([])
+            return result
+
         parsed_papers = [self.parse_metadata(raw_paper) for raw_paper in raw_papers]
         filtered_papers = self.filter_by_date(parsed_papers, date_range)
         result = {"papers": filtered_papers}
@@ -199,6 +212,9 @@ class PaperRetrievalSkill:
             raise ValueError("retrieval.retry_backoff_seconds must be non-negative.")
         return backoff_seconds
 
+    def _allow_empty_on_error(self) -> bool:
+        return bool(self.retrieval_config.get("allow_empty_on_error", False))
+
     def _build_search_query(self, query: str) -> str:
         if self._looks_like_arxiv_query(query):
             return query.strip()
@@ -336,7 +352,7 @@ class PaperRetrievalSkill:
             phrase = self._build_phrase_clause(group)
             if phrase:
                 alternatives.append(phrase)
-            alternatives.extend(self._build_term_clause(term) for term in group)
+            alternatives.append(self._combine_with_and(self._build_term_clause(term) for term in group))
             return self._combine_with_or(alternatives)
 
         chunk_clauses = []
@@ -345,7 +361,7 @@ class PaperRetrievalSkill:
             phrase = self._build_phrase_clause(chunk)
             if phrase:
                 alternatives.append(phrase)
-            alternatives.extend(self._build_term_clause(term) for term in chunk)
+            alternatives.append(self._combine_with_and(self._build_term_clause(term) for term in chunk))
             chunk_clauses.append(self._combine_with_or(alternatives))
         return " AND ".join(chunk_clauses)
 
@@ -382,6 +398,15 @@ class PaperRetrievalSkill:
                 unique_clauses.append(clause)
                 seen.add(clause)
         return f"({' OR '.join(unique_clauses)})"
+
+    def _combine_with_and(self, clauses: Any) -> str:
+        unique_clauses: list[str] = []
+        seen: set[str] = set()
+        for clause in clauses:
+            if clause and clause not in seen:
+                unique_clauses.append(clause)
+                seen.add(clause)
+        return f"({' AND '.join(unique_clauses)})"
 
     def _normalize_group_terms(self, terms: list[str]) -> list[str]:
         normalized_terms: list[str] = []

@@ -40,7 +40,17 @@ class PaperRetrievalSkillTest(unittest.TestCase):
 
         self.assertEqual(
             search_query,
-            '((ti:"graph neural networks" OR abs:"graph neural networks") OR (ti:graph OR abs:graph) OR (ti:neural OR abs:neural) OR (ti:networks OR abs:networks)) AND ((ti:"misinformation detection" OR abs:"misinformation detection") OR (ti:misinformation OR abs:misinformation) OR (ti:detection OR abs:detection))',
+            '((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) AND ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection)))',
+        )
+
+    def test_build_search_query_requires_all_terms_in_short_phrase(self):
+        skill = PaperRetrievalSkill()
+
+        search_query = skill._build_search_query("harness engineering")
+
+        self.assertEqual(
+            search_query,
+            '((ti:"harness engineering" OR abs:"harness engineering") OR ((ti:harness OR abs:harness) AND (ti:engineering OR abs:engineering)))',
         )
 
     def test_build_search_query_preserves_non_ascii_tokens(self):
@@ -48,10 +58,8 @@ class PaperRetrievalSkillTest(unittest.TestCase):
 
         search_query = skill._build_search_query('图神经 networks, misinformation')
 
-        self.assertEqual(
-            search_query,
-            '((ti:"图神经 networks misinformation" OR abs:"图神经 networks misinformation") OR (ti:图神经 OR abs:图神经) OR (ti:networks OR abs:networks) OR (ti:misinformation OR abs:misinformation))',
-        )
+        self.assertIn(" AND ", search_query)
+        self.assertIn("misinformation", search_query)
 
     def test_build_search_query_preserves_advanced_arxiv_syntax(self):
         skill = PaperRetrievalSkill()
@@ -107,6 +115,23 @@ class PaperRetrievalSkillTest(unittest.TestCase):
             self.assertTrue(output_path.exists())
             saved = load_json(output_path)
             self.assertEqual(saved, result)
+
+    def test_run_can_return_empty_result_on_retrieval_error(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "raw" / "arxiv_papers.json"
+            skill = PaperRetrievalSkill(
+                {
+                    "paths": {"raw_papers": str(output_path)},
+                    "retrieval": {"allow_empty_on_error": True},
+                }
+            )
+            skill.search_arxiv = lambda query, max_results: (_ for _ in ()).throw(RuntimeError("HTTP Error 429"))
+
+            result = skill.run({"query": "harness engineering", "date_range": "all", "max_results": 5})
+
+            self.assertEqual(result["papers"], [])
+            self.assertIn("HTTP Error 429", result["retrieval_error"])
+            self.assertTrue(output_path.exists())
 
     def test_search_arxiv_retries_after_transient_network_error(self):
         skill = PaperRetrievalSkill(

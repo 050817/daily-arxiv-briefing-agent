@@ -82,6 +82,65 @@ class RelevanceRankingSkillTest(unittest.TestCase):
 
         self.assertEqual([paper["arxiv_id"] for paper in filtered], ["2605.00002"])
 
+    def test_core_query_filter_keeps_specific_term_for_generic_context_query(self):
+        skill = RelevanceRankingSkill()
+        papers = [
+            {
+                "title": "Harness Evaluation Toolkit",
+                "abstract": "The harness reduces evaluation engineering effort.",
+                "categories": ["cs.AI"],
+            },
+            {
+                "title": "Quantum Engineering Study",
+                "abstract": "This paper studies engineering for quantum systems.",
+                "categories": ["quant-ph"],
+            },
+        ]
+
+        filtered = skill.apply_core_query_filter("harness engineering", papers)
+
+        self.assertEqual([paper["title"] for paper in filtered], ["Harness Evaluation Toolkit"])
+
+    def test_core_query_filter_prefers_papers_matching_all_query_terms(self):
+        skill = RelevanceRankingSkill()
+        papers = [
+            {
+                "title": "Harness Engineering Toolkit",
+                "abstract": "The harness-engineered system improves agent evaluation.",
+                "categories": ["cs.AI"],
+            },
+            {
+                "title": "Runtime Harness Audit",
+                "abstract": "The harness checks runtime behavior.",
+                "categories": ["cs.CR"],
+            },
+        ]
+
+        filtered = skill.apply_core_query_filter("harness engineering", papers)
+
+        self.assertEqual([paper["title"] for paper in filtered], ["Harness Engineering Toolkit"])
+
+    def test_hyphenated_topic_phrase_is_ranked_as_query_match(self):
+        skill = RelevanceRankingSkill()
+        papers = [
+            {
+                "title": "Case-Driven Agent Relevance",
+                "abstract": "The production system adopts a harness-engineering paradigm for agent evaluation.",
+                "categories": ["cs.IR"],
+            },
+            {
+                "title": "Runtime Harness Audit",
+                "abstract": "The harness checks runtime behavior and audit records.",
+                "categories": ["cs.CR"],
+            },
+        ]
+
+        ranked = skill.rank_with_tfidf("harness engineering", papers)
+
+        self.assertEqual(ranked[0]["title"], "Case-Driven Agent Relevance")
+        self.assertIn("engineering", ranked[0]["ranking_reason"])
+        self.assertIn("harness", ranked[0]["ranking_reason"])
+
     def test_select_top_k_handles_zero(self):
         skill = RelevanceRankingSkill()
         ranked = skill.rank_with_tfidf("social networks", SAMPLE_PAPERS)

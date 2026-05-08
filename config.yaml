@@ -14,3 +14,4 @@ retrieval:
   request_timeout_seconds: 30
   max_retries: 2
   retry_backoff_seconds: 1
+  allow_empty_on_error: true

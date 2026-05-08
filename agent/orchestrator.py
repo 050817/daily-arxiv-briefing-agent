@@ -65,10 +65,13 @@ class DailyArxivBriefingAgent:
                     )
                 elif stage == "briefing":
                     top_k_papers = self._get_top_k_papers(outputs)
+                    retrieval_output = outputs.get("retrieval", {})
                     outputs["briefing"] = self.briefing_skill.run(
                         {
                             "query": user_input["query"],
                             "top_k_papers": top_k_papers,
+                            "retrieval_error": retrieval_output.get("retrieval_error"),
+                            "retrieved_paper_count": len(retrieval_output.get("papers", [])),
                         }
                     )
                     output_paths["report"] = self.paths.get("report", "outputs/reports/daily_briefing.md")
