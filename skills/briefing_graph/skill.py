@@ -454,7 +454,7 @@ class BriefingGraphSkill:
         elif relevance_warning:
             lines.append(
                 "Keyword analysis is available, but the selected papers are only weakly cohesive for the query. "
-                "Treat the graph as a description of retrieved abstracts, not as a focused map of harness engineering."
+                "Treat the graph as a description of retrieved abstracts, not as a focused map of the full query topic."
             )
         elif central_keywords:
             top_terms = ", ".join(item["keyword"] for item in central_keywords[:5])
@@ -861,7 +861,7 @@ class BriefingGraphSkill:
         examples = "; ".join(weak_examples)
         return (
             f"Only {full_match_count} of {len(papers)} selected papers contain all main query terms "
-            f"({', '.join(sorted(query_terms))}). The remaining papers may be broad engineering matches rather than focused harness-engineering papers."
+            f"({', '.join(sorted(query_terms))}). The remaining papers may be broader keyword matches rather than tightly focused matches for this query."
             + (f" Examples: {examples}." if examples else "")
         )
 

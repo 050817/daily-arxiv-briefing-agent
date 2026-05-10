@@ -1,8 +1,12 @@
 # Daily arXiv Research Briefing Agent
 
-This repository contains the workflow architecture for a three-skill AI Agent that generates daily arXiv research briefings for social network analysis, graph learning, and related topics.
+This repository contains a three-skill AI Agent that generates daily arXiv research briefings for social network analysis, graph learning, and related topics.
 
-Skill 1 (paper retrieval) is implemented and can already fetch recent arXiv metadata. Skill 2 (relevance ranking) is also implemented with a lightweight TF-IDF baseline. Skill 3 is still a scaffold, so the workflow can be exercised end-to-end up to the briefing stage.
+All three Skills are implemented:
+
+- Skill 1 retrieves recent arXiv metadata.
+- Skill 2 ranks papers with a lightweight TF-IDF baseline.
+- Skill 3 generates a Markdown briefing plus SVG keyword-graph visualizations.
 
 ## Repository Structure
 
@@ -35,7 +39,10 @@ Skill 1 (paper retrieval) is implemented and can already fetch recent arXiv meta
 │   ├── reports/
 │   └── figures/
 └── tests/
-    └── test_agent.py
+    ├── test_agent.py
+    ├── test_briefing_graph.py
+    ├── test_paper_retrieval.py
+    └── test_relevance_ranking.py
 ```
 
 ## Environment Setup
@@ -53,7 +60,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-At the moment, the implemented workflow only requires `pyyaml`. Skill 2 uses a pure-Python TF-IDF baseline, so no extra ranking dependency is required. Future Skill implementations may add packages such as `arxiv`, `scikit-learn`, `sentence-transformers`, `networkx`, and `matplotlib`.
+At the moment, the implemented workflow only requires `pyyaml`. Retrieval and report generation use the Python standard library, Skill 2 uses a pure-Python TF-IDF baseline, and Skill 3 writes SVG figures directly, so no `networkx` or `matplotlib` dependency is required for the current implementation. Future experiments may add packages such as `arxiv`, `scikit-learn`, or `sentence-transformers`.
 
 ## Run the Workflow
 
@@ -67,11 +74,11 @@ python main.py \
   --top_k 5
 ```
 
-Because Skill 3 is still empty, the command will complete retrieval and ranking, then stop cleanly at the unimplemented briefing stage and return a structured JSON message with status `partial`.
+This command runs retrieval, ranking, and briefing end-to-end, then writes raw paper JSON, ranked paper JSON, a Markdown briefing, and SVG figures to the default paths in `config.yaml`.
 
 ## Stage-by-Stage Experiments
 
-The workflow supports partial execution. This is useful when later Skills are still missing.
+The workflow supports partial execution. This is useful for isolated debugging, demos, and Skill-by-Skill experiments.
 
 Run only Skill 1:
 
@@ -101,7 +108,7 @@ python main.py \
   --input examples/sample_ranked_papers.json
 ```
 
-Use `--strict` if you want the program to raise an error instead of returning a clean `partial` result when a Skill is not implemented.
+Use `--strict` during development if you want the program to raise an error instead of returning a clean `partial` result when a Skill raises `SkillNotImplementedError`.
 
 ## Run Each Skill Independently
 
@@ -133,7 +140,7 @@ python skills/briefing_graph/skill.py \
   --output outputs/reports/daily_briefing.md
 ```
 
-Skill 2 now produces ranked paper metadata and Top-K filtered papers. Skill 3 currently returns `status: not_implemented`.
+Skill 2 produces ranked paper metadata and Top-K filtered papers. Skill 3 produces the final Markdown briefing, keyword analysis, and SVG visualizations.
 
 ## Expected Data Contracts
 
@@ -161,7 +168,8 @@ Skill 3 should output:
   "report_markdown": "outputs/reports/daily_briefing.md",
   "summaries": [],
   "graph_analysis": {},
-  "figures": []
+  "figures": [],
+  "retrieval_error": ""
 }
 ```
 
@@ -182,13 +190,13 @@ Skill 1 request reliability can also be tuned in `config.yaml` through:
 
 ## Run Tests
 
-Run the integration contract tests:
+Run the full automated test suite:
 
 ```bash
-python -m unittest tests.test_agent
+python -m unittest discover -s tests
 ```
 
-Run the Skill 2 unit tests:
+Run a specific test module:
 
 ```bash
 python -m unittest tests.test_relevance_ranking
@@ -196,9 +204,9 @@ python -m unittest tests.test_relevance_ranking
 
 The tests verify that:
 
-- missing downstream Skills stop the workflow cleanly;
-- earlier stages can be tested even when later Skills are missing;
-- the full pipeline contract works after all Skills are filled.
+- retrieval, ranking, and briefing all satisfy their current data contracts;
+- stage-by-stage execution works from intermediate JSON files;
+- missing or intentionally stubbed Skills still stop the workflow cleanly when needed.
 
 ## Development Notes
 

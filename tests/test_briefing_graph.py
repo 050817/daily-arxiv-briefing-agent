@@ -152,7 +152,23 @@ class BriefingGraphSkillTest(unittest.TestCase):
 
             report = report_path.read_text(encoding="utf-8")
             self.assertIn("## Relevance Caution", report)
-            self.assertIn("broad engineering matches", report)
+            self.assertIn("broader keyword matches", report)
+
+    def test_graph_query_report_does_not_include_unrelated_hard_coded_topic_text(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            report_path = Path(tmpdir) / "briefing.md"
+            skill = BriefingGraphSkill({"paths": {"report": str(report_path), "figures_dir": str(Path(tmpdir) / "figures")}})
+
+            skill.run(
+                {
+                    "query": "graph neural networks",
+                    "top_k_papers": SAMPLE_TOP_K_PAPERS,
+                }
+            )
+
+            report = report_path.read_text(encoding="utf-8")
+            self.assertNotIn("harness engineering", report)
+            self.assertNotIn("harness-engineering", report)
 
     def test_query_focus_keywords_are_added_when_supported_by_paper_text(self):
         skill = BriefingGraphSkill()

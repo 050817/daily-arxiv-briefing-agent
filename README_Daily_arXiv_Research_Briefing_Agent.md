@@ -87,8 +87,8 @@ Example final output:
 
 ```text
 outputs/reports/daily_briefing.md
-outputs/figures/keyword_graph.png
-outputs/figures/top_keywords.png
+outputs/figures/keyword_graph.svg
+outputs/figures/top_keywords.svg
 ```
 
 ---
@@ -201,8 +201,8 @@ Expected output:
 
 ```text
 outputs/reports/daily_briefing.md
-outputs/figures/keyword_graph.png
-outputs/figures/top_keywords.png
+outputs/figures/keyword_graph.svg
+outputs/figures/top_keywords.svg
 data/raw/arxiv_papers.json
 data/processed/ranked_papers.json
 ```
@@ -455,8 +455,8 @@ This Skill generates structured summaries for Top-K papers, constructs a researc
     "communities": []
   },
   "figures": [
-    "outputs/figures/keyword_graph.png",
-    "outputs/figures/top_keywords.png"
+    "outputs/figures/keyword_graph.svg",
+    "outputs/figures/top_keywords.svg"
   ]
 }
 ```
@@ -732,6 +732,8 @@ Saved by Skill 3:
 
 ```text
 outputs/reports/daily_briefing.md
+outputs/figures/keyword_graph.svg
+outputs/figures/top_keywords.svg
 ```
 
 ---
