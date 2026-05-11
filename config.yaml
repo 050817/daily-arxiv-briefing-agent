@@ -17,3 +17,7 @@ retrieval:
   max_retries: 2
   retry_backoff_seconds: 1
   allow_empty_on_error: true
+  llm_keyword_extraction_enabled: true
+  llm_model: gpt-5.2
+  llm_timeout_seconds: 20
+  llm_max_keywords: 6

@@ -206,7 +206,10 @@ Skill 1 should output:
 
 ```json
 {
-  "papers": []
+  "papers": [],
+  "query_keywords": [],
+  "keyword_extraction_source": "openai",
+  "resolved_search_query": ""
 }
 ```
 
@@ -245,6 +248,15 @@ Skill 1 request reliability can also be tuned in `config.yaml` through:
 - `retrieval.request_timeout_seconds`
 - `retrieval.max_retries`
 - `retrieval.retry_backoff_seconds`
+
+Skill 1 now attempts OpenAI-based keyword extraction before building the final arXiv query. This behavior is controlled through:
+
+- `retrieval.llm_keyword_extraction_enabled`
+- `retrieval.llm_model`
+- `retrieval.llm_timeout_seconds`
+- `retrieval.llm_max_keywords`
+
+If `OPENAI_API_KEY` is unavailable or the LLM call fails, Skill 1 falls back to the original heuristic query expansion logic.
 
 ## Run Tests
 

@@ -4,7 +4,10 @@
 
 ```json
 {
-  "papers": []
+  "papers": [],
+  "query_keywords": [],
+  "keyword_extraction_source": "openai",
+  "resolved_search_query": ""
 }
 ```
 
@@ -25,7 +28,19 @@ The network request behavior is configurable in `config.yaml`:
 - `retrieval.max_retries`
 - `retrieval.retry_backoff_seconds`
 
-Plain-language queries are automatically expanded into broader title/abstract search clauses for better recall. If you already provide arXiv fielded syntax such as `cat:cs.LG AND ti:"graph neural networks"`, the query is passed through unchanged.
+Keyword extraction now works in two stages:
+
+- first, an OpenAI Responses API call extracts 2-6 concise technical keyword phrases from the natural-language query;
+- second, those phrases are expanded into broader title/abstract search clauses for arXiv retrieval.
+
+The OpenAI call uses `OPENAI_API_KEY` plus these optional config fields:
+
+- `retrieval.llm_keyword_extraction_enabled`
+- `retrieval.llm_model`
+- `retrieval.llm_timeout_seconds`
+- `retrieval.llm_max_keywords`
+
+If the query already uses arXiv fielded syntax such as `cat:cs.LG AND ti:"graph neural networks"`, the query is passed through unchanged. If the OpenAI call is unavailable or fails, the Skill falls back to the original heuristic keyword grouping logic.
 
 Independent demo:
 

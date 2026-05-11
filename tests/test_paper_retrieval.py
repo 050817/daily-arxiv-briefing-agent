@@ -33,6 +33,19 @@ SAMPLE_ENTRY = """
 
 
 class PaperRetrievalSkillTest(unittest.TestCase):
+    def test_build_search_query_can_use_llm_keyword_phrases(self):
+        skill = PaperRetrievalSkill()
+
+        search_query = skill._build_search_query(
+            "graph neural networks for misinformation detection",
+            keyword_phrases=["graph neural networks", "misinformation detection"],
+        )
+
+        self.assertEqual(
+            search_query,
+            '((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) AND ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection)))',
+        )
+
     def test_build_search_query_broadens_natural_language_query(self):
         skill = PaperRetrievalSkill()
 
@@ -101,7 +114,7 @@ class PaperRetrievalSkillTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "raw" / "arxiv_papers.json"
             skill = PaperRetrievalSkill({"paths": {"raw_papers": str(output_path)}})
-            skill.search_arxiv = lambda query, max_results: [ET.fromstring(SAMPLE_ENTRY)]
+            skill.search_arxiv = lambda query, max_results, keyword_phrases=None: [ET.fromstring(SAMPLE_ENTRY)]
 
             result = skill.run(
                 {
@@ -112,6 +125,12 @@ class PaperRetrievalSkillTest(unittest.TestCase):
             )
 
             self.assertEqual(len(result["papers"]), 1)
+            self.assertEqual(
+                result["query_keywords"],
+                ["graph neural networks misinformation detection"],
+            )
+            self.assertEqual(result["keyword_extraction_source"], "heuristic")
+            self.assertIn("ti:", result["resolved_search_query"])
             self.assertTrue(output_path.exists())
             saved = load_json(output_path)
             self.assertEqual(saved, result)
@@ -125,13 +144,57 @@ class PaperRetrievalSkillTest(unittest.TestCase):
                     "retrieval": {"allow_empty_on_error": True},
                 }
             )
-            skill.search_arxiv = lambda query, max_results: (_ for _ in ()).throw(RuntimeError("HTTP Error 429"))
+            skill.search_arxiv = lambda query, max_results, keyword_phrases=None: (_ for _ in ()).throw(RuntimeError("HTTP Error 429"))
 
             result = skill.run({"query": "harness engineering", "date_range": "all", "max_results": 5})
 
             self.assertEqual(result["papers"], [])
             self.assertIn("HTTP Error 429", result["retrieval_error"])
+            self.assertEqual(result["query_keywords"], ["harness engineering"])
+            self.assertEqual(result["keyword_extraction_source"], "heuristic")
             self.assertTrue(output_path.exists())
+
+    def test_run_uses_llm_keyword_phrases_when_available(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "raw" / "arxiv_papers.json"
+            skill = PaperRetrievalSkill({"paths": {"raw_papers": str(output_path)}})
+            skill._extract_keyword_phrases_with_llm = lambda query: ["graph neural networks", "misinformation detection"]
+
+            captured = {}
+
+            def fake_search(query, max_results, keyword_phrases=None):
+                captured["query"] = query
+                captured["keyword_phrases"] = keyword_phrases
+                return [ET.fromstring(SAMPLE_ENTRY)]
+
+            skill.search_arxiv = fake_search
+
+            result = skill.run(
+                {
+                    "query": "graph neural networks for misinformation detection",
+                    "date_range": "all",
+                    "max_results": 5,
+                }
+            )
+
+            self.assertEqual(
+                captured["keyword_phrases"],
+                ["graph neural networks", "misinformation detection"],
+            )
+            self.assertEqual(
+                result["query_keywords"],
+                ["graph neural networks", "misinformation detection"],
+            )
+            self.assertEqual(result["keyword_extraction_source"], "openai")
+
+    def test_parse_llm_keyword_response_accepts_json_object(self):
+        skill = PaperRetrievalSkill()
+
+        keywords = skill._parse_llm_keyword_response(
+            '{"keywords": ["graph neural networks", "misinformation detection", "graph neural networks"]}'
+        )
+
+        self.assertEqual(keywords, ["graph neural networks", "misinformation detection"])
 
     def test_search_arxiv_retries_after_transient_network_error(self):
         skill = PaperRetrievalSkill(

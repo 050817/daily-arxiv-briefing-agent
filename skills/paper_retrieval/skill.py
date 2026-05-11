@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import re
 import sys
 import time
@@ -56,9 +58,11 @@ class PaperRetrievalSkill:
 
         max_results = max(1, int(input_data.get("max_results", 50)))
         date_range = str(input_data.get("date_range", "last 7 days")).strip()
+        keyword_phrases, keyword_source = self._extract_keyword_phrases(query)
+        resolved_search_query = self._build_search_query(query, keyword_phrases=keyword_phrases)
 
         try:
-            raw_papers = self.search_arxiv(query, max_results)
+            raw_papers = self.search_arxiv(query, max_results, keyword_phrases=keyword_phrases)
         except RuntimeError as exc:
             if not self._allow_empty_on_error():
                 raise
@@ -67,18 +71,32 @@ class PaperRetrievalSkill:
                 "retrieval_error": str(exc),
                 "query": query,
                 "date_range": date_range,
+                "query_keywords": keyword_phrases,
+                "keyword_extraction_source": keyword_source,
+                "resolved_search_query": resolved_search_query,
             }
-            self.save_results([])
+            self.save_results(result)
             return result
 
         parsed_papers = [self.parse_metadata(raw_paper) for raw_paper in raw_papers]
         filtered_papers = self.filter_by_date(parsed_papers, date_range)
-        result = {"papers": filtered_papers}
-        self.save_results(filtered_papers)
+        result = {
+            "papers": filtered_papers,
+            "query_keywords": keyword_phrases,
+            "keyword_extraction_source": keyword_source,
+            "resolved_search_query": resolved_search_query,
+        }
+        self.save_results(result)
         return result
 
-    def search_arxiv(self, query: str, max_results: int) -> list[Any]:
-        search_query = self._build_search_query(query)
+    def search_arxiv(
+        self,
+        query: str,
+        max_results: int,
+        *,
+        keyword_phrases: list[str] | None = None,
+    ) -> list[Any]:
+        search_query = self._build_search_query(query, keyword_phrases=keyword_phrases)
         request_url = f"{ARXIV_API_URL}?{urlencode(self._build_request_params(search_query, max_results))}"
         request = Request(
             request_url,
@@ -149,8 +167,8 @@ class PaperRetrievalSkill:
             "categories": categories,
         }
 
-    def save_results(self, papers: list[dict[str, Any]], output_path: str | None = None) -> None:
-        save_json({"papers": papers}, output_path or self.paths.get("raw_papers", "data/raw/arxiv_papers.json"))
+    def save_results(self, result: dict[str, Any], output_path: str | None = None) -> None:
+        save_json(result, output_path or self.paths.get("raw_papers", "data/raw/arxiv_papers.json"))
 
     def _build_request_params(self, search_query: str, max_results: int) -> dict[str, Any]:
         return {
@@ -215,11 +233,11 @@ class PaperRetrievalSkill:
     def _allow_empty_on_error(self) -> bool:
         return bool(self.retrieval_config.get("allow_empty_on_error", False))
 
-    def _build_search_query(self, query: str) -> str:
+    def _build_search_query(self, query: str, keyword_phrases: list[str] | None = None) -> str:
         if self._looks_like_arxiv_query(query):
             return query.strip()
 
-        concept_groups = self._extract_concept_groups(query)
+        concept_groups = self._concept_groups_from_phrases(keyword_phrases) if keyword_phrases else self._extract_concept_groups(query)
         if not concept_groups:
             raise ValueError("Query must contain at least one searchable token.")
         return " AND ".join(self._build_group_clause(group) for group in concept_groups)
@@ -280,6 +298,141 @@ class PaperRetrievalSkill:
 
     def _normalize_whitespace(self, value: str) -> str:
         return " ".join(value.split())
+
+    def _extract_keyword_phrases(self, query: str) -> tuple[list[str], str]:
+        if self._looks_like_arxiv_query(query):
+            return [], "direct_query"
+
+        if self._llm_keyword_extraction_enabled():
+            try:
+                keyword_phrases = self._extract_keyword_phrases_with_llm(query)
+                if keyword_phrases:
+                    return keyword_phrases, "openai"
+            except RuntimeError:
+                pass
+
+        return self._extract_keyword_phrases_heuristically(query), "heuristic"
+
+    def _extract_keyword_phrases_heuristically(self, query: str) -> list[str]:
+        return [" ".join(group) for group in self._extract_concept_groups(query)]
+
+    def _extract_keyword_phrases_with_llm(self, query: str) -> list[str]:
+        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set for LLM keyword extraction.")
+
+        request = Request(
+            f"{self._get_openai_base_url().rstrip('/')}/responses",
+            data=json.dumps(
+                {
+                    "model": self._get_llm_model(),
+                    "instructions": (
+                        "You extract concise technical search phrases for academic paper retrieval. "
+                        "Return only JSON with a top-level 'keywords' array. "
+                        "Each item must be a short phrase of 1 to 4 words. "
+                        "Prefer technical concepts that should appear in an arXiv title or abstract. "
+                        "Return between 2 and 6 phrases when possible."
+                    ),
+                    "input": (
+                        f"Research query: {query}\n"
+                        "Return JSON only in this format: "
+                        '{"keywords": ["phrase 1", "phrase 2"]}'
+                    ),
+                }
+            ).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "daily-arxiv-briefing-agent/1.0 (llm-keyword-extraction)",
+            },
+            method="POST",
+        )
+
+        try:
+            with urlopen(request, timeout=self._get_llm_timeout_seconds()) as response:
+                payload = response.read()
+        except (HTTPError, URLError, TimeoutError, SocketTimeout) as exc:
+            raise RuntimeError(f"Failed to extract keywords with OpenAI: {exc}") from exc
+
+        try:
+            response_data = json.loads(payload.decode("utf-8"))
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"OpenAI response was not valid JSON: {exc}") from exc
+
+        output_text = self._extract_output_text_from_openai_response(response_data)
+        keyword_phrases = self._parse_llm_keyword_response(output_text)
+        if not keyword_phrases:
+            raise RuntimeError("OpenAI keyword extraction returned no usable keywords.")
+        return keyword_phrases[: self._get_llm_max_keywords()]
+
+    def _extract_output_text_from_openai_response(self, response_data: dict[str, Any]) -> str:
+        output_text = str(response_data.get("output_text", "")).strip()
+        if output_text:
+            return output_text
+
+        fragments: list[str] = []
+        for item in response_data.get("output", []):
+            for content in item.get("content", []):
+                if content.get("type") in {"output_text", "text"} and content.get("text"):
+                    fragments.append(str(content["text"]))
+        return "\n".join(fragment.strip() for fragment in fragments if fragment.strip())
+
+    def _parse_llm_keyword_response(self, output_text: str) -> list[str]:
+        text = output_text.strip()
+        if text.startswith("```"):
+            text = re.sub(r"^```(?:json)?\s*", "", text)
+            text = re.sub(r"\s*```$", "", text)
+
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"OpenAI keyword extraction did not return valid JSON: {exc}") from exc
+
+        if isinstance(payload, dict):
+            values = payload.get("keywords") or payload.get("phrases") or payload.get("concepts") or []
+        elif isinstance(payload, list):
+            values = payload
+        else:
+            values = []
+
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for value in values:
+            phrase = " ".join(str(value).split()).strip("\"' ")
+            if not phrase:
+                continue
+            lowered = phrase.lower()
+            if lowered in seen:
+                continue
+            normalized.append(phrase)
+            seen.add(lowered)
+        return normalized
+
+    def _llm_keyword_extraction_enabled(self) -> bool:
+        return bool(self.retrieval_config.get("llm_keyword_extraction_enabled", True))
+
+    def _get_llm_model(self) -> str:
+        return str(self.retrieval_config.get("llm_model", "gpt-5.2")).strip() or "gpt-5.2"
+
+    def _get_llm_timeout_seconds(self) -> float:
+        value = self.retrieval_config.get("llm_timeout_seconds", 20)
+        timeout_seconds = float(value)
+        if timeout_seconds <= 0:
+            raise ValueError("retrieval.llm_timeout_seconds must be positive.")
+        return timeout_seconds
+
+    def _get_llm_max_keywords(self) -> int:
+        value = int(self.retrieval_config.get("llm_max_keywords", 6))
+        if value < 1:
+            raise ValueError("retrieval.llm_max_keywords must be positive.")
+        return value
+
+    def _get_openai_base_url(self) -> str:
+        return str(
+            self.retrieval_config.get("openai_base_url")
+            or os.getenv("OPENAI_BASE_URL")
+            or "https://api.openai.com/v1"
+        ).strip()
 
     def _extract_alternate_url(self, raw_paper: ET.Element) -> str:
         for link in raw_paper.findall("atom:link", ATOM_NAMESPACE):
@@ -342,6 +495,14 @@ class PaperRetrievalSkill:
             if normalized:
                 normalized_groups.append(normalized)
         return normalized_groups
+
+    def _concept_groups_from_phrases(self, keyword_phrases: list[str]) -> list[list[str]]:
+        groups: list[list[str]] = []
+        for phrase in keyword_phrases:
+            normalized = self._normalize_group_terms(phrase.split())
+            if normalized:
+                groups.append(normalized)
+        return groups
 
     def _build_group_clause(self, group: list[str]) -> str:
         if len(group) == 1:
