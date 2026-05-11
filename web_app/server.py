@@ -22,12 +22,12 @@ else:
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agent.io_utils import ensure_dir, load_config, load_json, resolve_path, save_json
+from agent.openai_compat import has_openai_compatible_api_key, load_openai_compatible_settings, resolve_openai_compatible_config
 from agent.orchestrator import DailyArxivBriefingAgent
 from skills.briefing_graph.skill import BriefingGraphSkill
 
 
 STATIC_DIR = BUNDLE_ROOT / "web_app" / "static"
-LOCAL_SETTINGS_PATH = PROJECT_ROOT / "web_app" / "local_settings.json"
 CONTENT_TYPES = {
     ".html": "text/html; charset=utf-8",
     ".css": "text/css; charset=utf-8",
@@ -47,23 +47,25 @@ class BriefingWebApp:
         self.briefing_skill = BriefingGraphSkill(self.config)
 
     def get_settings(self) -> dict[str, Any]:
-        settings = self._load_local_settings()
+        settings = load_openai_compatible_settings()
+        resolved = resolve_openai_compatible_config(default_model="gpt-5.4")
         return {
-            "api_url": settings.get("api_url") or os.environ.get("OPENAI_BASE_URL", ""),
-            "model": settings.get("model") or os.environ.get("OPENAI_MODEL", "gpt-5.4"),
-            "has_api_key": bool(settings.get("api_key") or os.environ.get("OPENAI_API_KEY", "")),
+            "api_url": settings.get("api_url") or resolved["api_url"],
+            "model": settings.get("model") or resolved["model"],
+            "has_api_key": has_openai_compatible_api_key(),
         }
 
     def save_settings(self, payload: dict[str, Any]) -> dict[str, Any]:
         api_url = str(payload.get("api_url", "")).strip()
         model = str(payload.get("model", "")).strip() or "gpt-5.4"
         api_key = str(payload.get("api_key", "")).strip()
-        current = self._load_local_settings()
+        current = load_openai_compatible_settings()
         if not api_key and current.get("api_key"):
             api_key = current["api_key"]
         settings = {"api_url": api_url, "model": model, "api_key": api_key}
-        LOCAL_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        LOCAL_SETTINGS_PATH.write_text(json.dumps(settings, ensure_ascii=False, indent=2), encoding="utf-8")
+        settings_path = resolve_path("web_app/local_settings.json")
+        settings_path.parent.mkdir(parents=True, exist_ok=True)
+        settings_path.write_text(json.dumps(settings, ensure_ascii=False, indent=2), encoding="utf-8")
         return self.get_settings()
 
     def run_workflow(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -197,8 +199,8 @@ class BriefingWebApp:
         return "\n\n".join(chunks)
 
     def _call_model_or_fallback(self, message: str, context: str) -> str:
-        settings = self._load_local_settings()
-        api_key = str(settings.get("api_key") or os.environ.get("OPENAI_API_KEY", "")).strip()
+        settings = load_openai_compatible_settings()
+        api_key = resolve_openai_compatible_config(default_model="gpt-5.4").get("api_key", "")
         if api_key:
             try:
                 return self._call_openai_compatible_model(message, context, api_key, settings)
@@ -216,8 +218,14 @@ class BriefingWebApp:
         api_key: str,
         settings: dict[str, Any],
     ) -> str:
-        base_url = str(settings.get("api_url") or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
-        model = str(settings.get("model") or os.environ.get("OPENAI_MODEL", "gpt-4.1-mini"))
+        resolved = resolve_openai_compatible_config(
+            configured_base_url=str(settings.get("api_url", "")).strip(),
+            configured_model=str(settings.get("model", "")).strip(),
+            configured_api_key=api_key,
+            default_model="gpt-4.1-mini",
+        )
+        base_url = resolved["api_url"].rstrip("/")
+        model = resolved["model"]
         request_body = {
             "model": model,
             "messages": [
@@ -240,14 +248,6 @@ class BriefingWebApp:
         with urllib.request.urlopen(request, timeout=60) as response:
             data = json.loads(response.read().decode("utf-8"))
         return data["choices"][0]["message"]["content"]
-
-    def _load_local_settings(self) -> dict[str, Any]:
-        if not LOCAL_SETTINGS_PATH.exists():
-            return {}
-        try:
-            return json.loads(LOCAL_SETTINGS_PATH.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            return {}
 
     def _fallback_answer(self, message: str, context: str) -> str:
         terms = [term.lower() for term in message.split() if len(term) > 2]

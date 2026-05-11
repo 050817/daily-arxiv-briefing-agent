@@ -33,14 +33,14 @@ Keyword extraction now works in two stages:
 - first, an OpenAI Responses API call extracts 2-6 concise technical keyword phrases from the natural-language query;
 - second, those phrases are expanded into broader title/abstract search clauses for arXiv retrieval.
 
-The OpenAI call uses `OPENAI_API_KEY` plus these optional config fields:
+The OpenAI call reuses `web_app/local_settings.json` when available, so a model configured in the local web UI can be shared directly with Skill 1. It otherwise falls back to `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`, plus these optional config fields:
 
 - `retrieval.llm_keyword_extraction_enabled`
 - `retrieval.llm_model`
 - `retrieval.llm_timeout_seconds`
 - `retrieval.llm_max_keywords`
 
-If the query already uses arXiv fielded syntax such as `cat:cs.LG AND ti:"graph neural networks"`, the query is passed through unchanged. If the OpenAI call is unavailable or fails, the Skill falls back to the original heuristic keyword grouping logic.
+If the query already uses arXiv fielded syntax such as `cat:cs.LG AND ti:"graph neural networks"`, the query is passed through unchanged. If no OpenAI-compatible key is available or the OpenAI call fails, the Skill falls back to the original heuristic keyword grouping logic.
 
 Independent demo:
 

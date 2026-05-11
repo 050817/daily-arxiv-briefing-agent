@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import sys
 import time
@@ -18,6 +17,7 @@ from urllib.request import Request, urlopen
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from agent.io_utils import save_json
+from agent.openai_compat import resolve_openai_compatible_config
 from agent.schema import SkillNotImplementedError
 from skills.common import add_common_output_arg, not_implemented_result, print_skill_result
 
@@ -317,9 +317,11 @@ class PaperRetrievalSkill:
         return [" ".join(group) for group in self._extract_concept_groups(query)]
 
     def _extract_keyword_phrases_with_llm(self, query: str) -> list[str]:
-        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        api_key = self._get_openai_api_key()
         if not api_key:
-            raise RuntimeError("OPENAI_API_KEY is not set for LLM keyword extraction.")
+            raise RuntimeError(
+                "No OpenAI-compatible API key is configured for LLM keyword extraction."
+            )
 
         request = Request(
             f"{self._get_openai_base_url().rstrip('/')}/responses",
@@ -412,7 +414,7 @@ class PaperRetrievalSkill:
         return bool(self.retrieval_config.get("llm_keyword_extraction_enabled", True))
 
     def _get_llm_model(self) -> str:
-        return str(self.retrieval_config.get("llm_model", "gpt-5.2")).strip() or "gpt-5.2"
+        return self._get_openai_compatible_config()["model"]
 
     def _get_llm_timeout_seconds(self) -> float:
         value = self.retrieval_config.get("llm_timeout_seconds", 20)
@@ -428,11 +430,25 @@ class PaperRetrievalSkill:
         return value
 
     def _get_openai_base_url(self) -> str:
-        return str(
-            self.retrieval_config.get("openai_base_url")
-            or os.getenv("OPENAI_BASE_URL")
+        return self._get_openai_compatible_config()["api_url"]
+
+    def _get_openai_api_key(self) -> str:
+        return self._get_openai_compatible_config()["api_key"]
+
+    def _get_openai_compatible_config(self) -> dict[str, str]:
+        return resolve_openai_compatible_config(
+            default_base_url=self._get_configured_openai_base_url_default(),
+            default_model=self._get_configured_llm_model_default(),
+        )
+
+    def _get_configured_llm_model_default(self) -> str:
+        return str(self.retrieval_config.get("llm_model", "gpt-5.2")).strip() or "gpt-5.2"
+
+    def _get_configured_openai_base_url_default(self) -> str:
+        return (
+            str(self.retrieval_config.get("openai_base_url", "https://api.openai.com/v1")).strip()
             or "https://api.openai.com/v1"
-        ).strip()
+        )
 
     def _extract_alternate_url(self, raw_paper: ET.Element) -> str:
         for link in raw_paper.findall("atom:link", ATOM_NAMESPACE):

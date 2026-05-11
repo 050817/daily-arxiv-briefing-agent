@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
@@ -195,6 +196,54 @@ class PaperRetrievalSkillTest(unittest.TestCase):
         )
 
         self.assertEqual(keywords, ["graph neural networks", "misinformation detection"])
+
+    def test_llm_keyword_extraction_can_reuse_web_app_local_settings(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            settings_path = Path(tmpdir) / "web_app" / "local_settings.json"
+            settings_path.parent.mkdir(parents=True, exist_ok=True)
+            settings_path.write_text(
+                json.dumps(
+                    {
+                        "api_url": "https://example.invalid/v1",
+                        "model": "gpt-5.4",
+                        "api_key": "test-key",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            skill = PaperRetrievalSkill({"retrieval": {"llm_model": "gpt-5.2"}})
+
+            class FakeResponse:
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc, tb):
+                    return False
+
+                def read(self):
+                    return json.dumps({"output_text": '{"keywords": ["graph neural networks"]}'}).encode("utf-8")
+
+            captured: dict[str, object] = {}
+
+            def fake_urlopen(request, timeout):
+                captured["url"] = request.full_url
+                captured["authorization"] = request.get_header("Authorization")
+                captured["payload"] = json.loads(request.data.decode("utf-8"))
+                captured["timeout"] = timeout
+                return FakeResponse()
+
+            with patch("agent.openai_compat.LOCAL_SETTINGS_PATH", settings_path):
+                with patch.dict("os.environ", {}, clear=True):
+                    with patch("skills.paper_retrieval.skill.urlopen", side_effect=fake_urlopen):
+                        keywords = skill._extract_keyword_phrases_with_llm(
+                            "graph neural networks for misinformation detection"
+                        )
+
+            self.assertEqual(keywords, ["graph neural networks"])
+            self.assertEqual(captured["url"], "https://example.invalid/v1/responses")
+            self.assertEqual(captured["authorization"], "Bearer test-key")
+            self.assertEqual(captured["payload"]["model"], "gpt-5.4")
+            self.assertEqual(captured["timeout"], 20.0)
 
     def test_search_arxiv_retries_after_transient_network_error(self):
         skill = PaperRetrievalSkill(
