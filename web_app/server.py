@@ -52,6 +52,7 @@ class BriefingWebApp:
         return {
             "api_url": settings.get("api_url") or resolved["api_url"],
             "model": settings.get("model") or resolved["model"],
+            "api_key": settings.get("api_key", ""),
             "has_api_key": has_openai_compatible_api_key(),
         }
 

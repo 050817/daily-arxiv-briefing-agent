@@ -79,7 +79,7 @@ async function loadSettings() {
   const settings = await fetchJson("/api/settings");
   apiUrlInput.value = settings.api_url || "";
   modelInput.value = settings.model || "gpt-5.4";
-  apiKeyInput.value = "";
+  apiKeyInput.value = settings.api_key || "";
   settingsStatus.textContent = settings.has_api_key
     ? "已保存 API Key"
     : "未保存 API Key，聊天将使用本地文件检索";
@@ -216,7 +216,7 @@ settingsForm.addEventListener("submit", async (event) => {
         api_key: apiKeyInput.value,
       }),
     });
-    apiKeyInput.value = "";
+    apiKeyInput.value = settings.api_key || apiKeyInput.value;
     settingsStatus.textContent = settings.has_api_key
       ? "设置已保存，聊天将使用模型接口"
       : "设置已保存，但未填写 API Key";
