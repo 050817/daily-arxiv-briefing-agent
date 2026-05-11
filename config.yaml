@@ -2,7 +2,9 @@ paths:
   raw_papers: data/raw/arxiv_papers.json
   ranked_papers: data/processed/ranked_papers.json
   report: outputs/reports/daily_briefing.md
+  report_pdf: outputs/reports/daily_briefing.pdf
   figures_dir: outputs/figures
+  archive_dir: archives
 
 defaults:
   date_range: last 7 days

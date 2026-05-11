@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from pypdf import PdfReader
+
 from skills.briefing_graph.skill import BriefingGraphSkill
 
 
@@ -67,8 +69,11 @@ class BriefingGraphSkillTest(unittest.TestCase):
     def test_run_writes_report_and_figures(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             report_path = Path(tmpdir) / "daily_briefing.md"
+            pdf_path = Path(tmpdir) / "daily_briefing.pdf"
             figures_dir = Path(tmpdir) / "figures"
-            skill = BriefingGraphSkill({"paths": {"report": str(report_path), "figures_dir": str(figures_dir)}})
+            skill = BriefingGraphSkill(
+                {"paths": {"report": str(report_path), "report_pdf": str(pdf_path), "figures_dir": str(figures_dir)}}
+            )
 
             result = skill.run(
                 {
@@ -78,11 +83,18 @@ class BriefingGraphSkillTest(unittest.TestCase):
             )
 
             self.assertEqual(result["report_markdown"], str(report_path))
+            self.assertEqual(result["report_pdf"], str(pdf_path))
             self.assertTrue(report_path.exists())
+            self.assertTrue(pdf_path.exists())
             report = report_path.read_text(encoding="utf-8")
             self.assertIn("Evidence policy", report)
             self.assertIn("Not mentioned in abstract", report)
             self.assertIn("## Keyword Network Analysis", report)
+            pdf_text = "\n".join(page.extract_text() or "" for page in PdfReader(str(pdf_path)).pages)
+            self.assertIn("Daily arXiv Research Briefing", pdf_text)
+            self.assertIn("Query: graph neural networks for misinformation detection", pdf_text)
+            self.assertIn("1. Executive Summary", pdf_text)
+            self.assertIn("10. Limitations of This Search", pdf_text)
             self.assertEqual(len(result["figures"]), 2)
             for figure in result["figures"]:
                 self.assertTrue(Path(figure).exists())
@@ -186,6 +198,39 @@ class BriefingGraphSkillTest(unittest.TestCase):
             paper_keywords["Harness Evaluation Toolkit"][:3],
             ["harness engineering", "harness", "engineering"],
         )
+
+    def test_archive_outputs_copies_artifacts_and_chat(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            report = root / "report.md"
+            pdf = root / "report.pdf"
+            graph = root / "keyword_graph.svg"
+            report.write_text("# Report", encoding="utf-8")
+            pdf.write_bytes(b"%PDF-1.4\n")
+            graph.write_text("<svg></svg>", encoding="utf-8")
+            skill = BriefingGraphSkill({"paths": {"archive_dir": str(root / "archives")}})
+
+            archive = skill.archive_outputs(
+                "graph neural networks",
+                {"report_markdown": report, "report_pdf": pdf, "keyword_graph": graph},
+                messages=[{"role": "user", "content": "What is this?"}],
+                metadata_extra={
+                    "date_start": "2026-05-05",
+                    "date_end": "2026-05-11",
+                    "date_label": "2026-05-05 至 2026-05-11",
+                    "display_title": "graph neural networks | 2026-05-05 至 2026-05-11",
+                },
+            )
+
+            archive_path = Path(archive["path"])
+            self.assertTrue((archive_path / "report.md").exists())
+            self.assertTrue((archive_path / "report.pdf").exists())
+            self.assertTrue((archive_path / "keyword_graph.svg").exists())
+            self.assertIn("graph-neural-networks", archive["id"])
+            self.assertEqual(archive["metadata"]["date_start"], "2026-05-05")
+            self.assertEqual(archive["metadata"]["date_end"], "2026-05-11")
+            self.assertIn("2026-05-05", archive["metadata"]["display_title"])
+            self.assertIn("What is this?", (archive_path / "chat.json").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

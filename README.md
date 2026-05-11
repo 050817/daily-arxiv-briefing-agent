@@ -60,7 +60,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-At the moment, the implemented workflow only requires `pyyaml`. Retrieval and report generation use the Python standard library, Skill 2 uses a pure-Python TF-IDF baseline, and Skill 3 writes SVG figures directly, so no `networkx` or `matplotlib` dependency is required for the current implementation. Future experiments may add packages such as `arxiv`, `scikit-learn`, or `sentence-transformers`.
+The implemented workflow uses `pyyaml` for configuration, `reportlab` for PDF generation, and `pypdf`/`pdfplumber` for PDF checks and inspection. Retrieval uses arXiv HTTP endpoints through the Python standard library, Skill 2 uses a pure-Python TF-IDF baseline, and Skill 3 writes SVG figures directly, so no `networkx` or `matplotlib` dependency is required for the current implementation.
 
 ## Run the Workflow
 
@@ -74,7 +74,65 @@ python main.py \
   --top_k 5
 ```
 
-This command runs retrieval, ranking, and briefing end-to-end, then writes raw paper JSON, ranked paper JSON, a Markdown briefing, and SVG figures to the default paths in `config.yaml`.
+This command runs retrieval, ranking, and briefing end-to-end, then writes raw paper JSON, ranked paper JSON, Markdown and PDF reports, and keyword figures to the configured output paths.
+
+## Run the HTTP Web App
+
+Start the local web interface:
+
+```bash
+python web_app/server.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:8765
+```
+
+The web page lets you:
+
+- enter a query and run the full retrieval/ranking/briefing workflow;
+- choose an arbitrary recent-day window, or search all dates;
+- preview and download the generated PDF report;
+- preview and download keyword/topic SVG figures;
+- chat about the archived report files;
+- browse archives by topic plus query date range. Archive folders are saved as `keyword + timestamp` under `archives/`, and each `metadata.json` stores the query start/end dates.
+
+For model-backed chat, set an OpenAI-compatible API configuration before starting the server:
+
+```bash
+set OPENAI_API_KEY=your_key
+set OPENAI_BASE_URL=https://api.openai.com/v1
+set OPENAI_MODEL=gpt-4.1-mini
+python web_app/server.py
+```
+
+If no API key is configured, the chat panel still works in local file-search mode.
+
+### Double-click Launcher
+
+On Windows, you can double-click:
+
+```text
+dist/DailyArxivWeb.exe
+```
+
+The executable starts the local HTTP server and opens the browser automatically. Keep the terminal window open while using the page; closing it stops the local web app.
+
+To rebuild the executable after code changes:
+
+```bash
+python -m PyInstaller --noconfirm --onefile --name DailyArxivWeb --paths . --collect-all reportlab --hidden-import agent.io_utils --hidden-import agent.orchestrator --hidden-import agent.schema --hidden-import skills.common --hidden-import skills.paper_retrieval.skill --hidden-import skills.relevance_ranking.skill --hidden-import skills.briefing_graph.skill --add-data "web_app/static;web_app/static" web_app/server.py
+```
+
+The web UI can store API URL, model, and API key from the browser. These values are saved only on this machine in:
+
+```text
+web_app/local_settings.json
+```
+
+That file is ignored by Git.
 
 ## Stage-by-Stage Experiments
 

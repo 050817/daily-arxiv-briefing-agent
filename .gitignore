@@ -7,4 +7,15 @@ __pycache__/
 venv/
 env/
 .env
+web_app/local_settings.json
+dist/web_app/local_settings.json
+*.exe
+dist/*.exe
+archives/
+dist/archives/
+dist/data/
+dist/outputs/
+dist/web_app/
+build/
+*.spec
 .DS_Store

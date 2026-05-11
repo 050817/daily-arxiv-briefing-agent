@@ -1,0 +1,303 @@
+{
+  "ranked_papers": [
+    {
+      "title": "Differential Analysis of Microbial Interaction Networks",
+      "authors": [
+        "Marianna Milano",
+        "Pietro Hiram Guzzi"
+      ],
+      "abstract": "Microbiome studies increasingly indicate that disease-associated shifts cannot be understood from compositional changes alone. The functional architecture of microbial communities encoded in patterns of association among microbial gene families may reveal how these systems reorganize across biological conditions. Here, we present a network-based framework for characterizing microbiome rewiring across conditions. The approach combines condition-specific network inference, differential network analysis and pathway enrichment to identify interactions that are gained, lost or altered between groups, with a specific focus on sex-dependent differences. We apply the framework to inflammatory bowel disease, type 2 diabetes and atherosclerotic cardiovascular disease, comparing male and female specific microbial gene-family networks within each disease context. Across these settings, differential networks reveal extensive rewiring of microbial functional interactions, suggesting that microbiome alterations are shaped not only by changes in abundance but also by shifts in community organization. Importantly, pathway enrichment of rewired interactions uncovers functional signals that are not apparent from individual networks alone, highlighting latent disease and sex associated mechanisms. Code, data and supplementary information are available on the web site.",
+      "published_date": "2026-04-26",
+      "arxiv_id": "2604.23773v1",
+      "url": "https://arxiv.org/abs/2604.23773v1",
+      "categories": [
+        "q-bio.OT"
+      ],
+      "relevance_score": 0.05,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Equation Learning for multiscale models of infectious diseases",
+      "authors": [
+        "James W. G. Doran",
+        "Cameron A. Smith",
+        "Christian A. Yates",
+        "Ruth Bowness"
+      ],
+      "abstract": "Tuberculosis (TB) is an airborne disease caused by the pathogen Mycobacterium tuberculosis. In 2023, according to the World Health Organization, it ''probably'' replaced COVID-19 as the leading cause of death from an infectious agent globally; in the nineteenth century, one in seven of all humans deaths were as a result of tuberculosis. More than 10 million people are diagnosed with TB every year. The majority of cases in adults occur in males (62.5% of all global adult cases in 2023, compared to 37.5% in females). The main reasons for males suffering from a higher burden of global TB cases, compared to females, is likely to be a combination of within-host factors, such as differences in immune response, and population-scale factors, such as likelihood of completing treatment. To investigate the impact different scales have in determining this higher TB burden in males, we have developed a gender/sex-stratified multiscale framework. We have learnt ordinary differential equations (ODEs) to capture the average output of an agent-based within-host model, and used the resulting equations to describe the within-host scales of the multiscale framework. We evolve the population demographics at the between-host scale using ODEs, and link the scales with stochastic coupling functions. We have considered counterfactual scenarios to elucidate the impact of sex and gender on the infectious disease dynamics of TB. This paper is intended to provide a proof-of-concept for the development and implementation of the presented multiscale framework.",
+      "published_date": "2026-04-27",
+      "arxiv_id": "2604.25038v1",
+      "url": "https://arxiv.org/abs/2604.25038v1",
+      "categories": [
+        "q-bio.PE"
+      ],
+      "relevance_score": 0.0444,
+      "rank": 2,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Whole-body CT attenuation and volume charts from routine clinical scans via evidence-grounded LLM report filtering",
+      "authors": [
+        "Christian Wachinger",
+        "Bernhard Renger",
+        "Christopher Späth",
+        "Jan Kirschke",
+        "Marcus Makowski"
+      ],
+      "abstract": "Interpreting quantitative CT biomarkers, such as organ volume and tissue attenuation, requires large-scale healthy reference distributions. However, creating these is challenging because clinical datasets are often heavily enriched with pathology. Here, we develop an evidence-grounded, cross-verified large language model (LLM) ensemble to filter pathological findings from radiology reports, enabling the construction of pathology-reduced cohorts from over 350,000 CT examinations. Five LLMs, first, flag structure-level abnormality candidates grounded in verbatim report evidence and, second, resolve disagreements via cross-verification. Using distribution-aware generalized additive models for location, scale, and shape, we establish comprehensive whole-body reference charts for 106 anatomical structures (volumes and attenuation) across adulthood, accounting for age, sex, contrast enhancement, and acquisition parameters. Longitudinal analyses reveal structure- and contrast-dependent changes distinct from cross-sectional trends. These resources facilitate covariate-adjusted centile scoring from routine CT, supporting standardized quantitative phenotyping, multi-site imaging studies, and scalable opportunistic screening research.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.05933v1",
+      "url": "https://arxiv.org/abs/2605.05933v1",
+      "categories": [
+        "cs.CV"
+      ],
+      "relevance_score": 0.0271,
+      "rank": 3,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Multilevel Regression Modeling of Covariance Matrix Outcomes",
+      "authors": [
+        "Michelle Murphy Green",
+        "Xi Luo",
+        "Brian S. Caffo",
+        "Yi Zhao"
+      ],
+      "abstract": "Covariance matrix outcomes arise naturally in neuroimaging experiments to study brain functional connectivity. It is also of interest to understand how brain network organization varies with subject-level covariates. Existing covariance regression methods operate in a single-level framework and do not accommodate the hierarchically nested data structure in which subjects are grouped into clusters, such as age cohorts in lifespan studies. A Multilevel Covariate-Assisted Principal Regression (MCAP) framework is introduced, which identifies, for each cluster, a linear projection such that a generalized linear mixed effects model can be formulated with the covariates. The cluster-specific projections are modeled on the unit sphere via a von Mises-Fisher distribution, enabling principled borrowing of information across clusters. Model parameters are estimated by maximizing a hierarchical likelihood. For inference, a two-stage bootstrap procedure is proposed. Asymptotic properties of the estimators are established. Simulation studies demonstrate that MCAP substantially outperforms single-level competitors in estimating regression coefficients. Applied to the Human Connectome Project Lifespan Study spanning ages from five to ninety, MCAP identifies a dominant spectral brain network capturing age and sex effects on functional connectivity, and reveals findings including the convergence of neural reorganization patterns in late adulthood and the coordinated lifespan modulation of cross-network regions linked to language and executive function.",
+      "published_date": "2026-05-06",
+      "arxiv_id": "2605.05371v1",
+      "url": "https://arxiv.org/abs/2605.05371v1",
+      "categories": [
+        "stat.ME"
+      ],
+      "relevance_score": 0.0251,
+      "rank": 4,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Generative Modeling of Neurodegenerative Brain Anatomy with 4D Longitudinal Diffusion Model",
+      "authors": [
+        "Nivetha Jayakumar",
+        "Swakshar Deb",
+        "Bahram Jafrasteh",
+        "Qingyu Zhao",
+        "Miaomiao Zhang"
+      ],
+      "abstract": "Understanding and predicting the progression of neurodegenerative diseases remains a major challenge in medical AI, with significant implications for early diagnosis, disease monitoring, and treatment planning. However, most available longitudinal neuroimaging datasets are temporally sparse with a few follow-up scans per subject. This scarcity of temporal data limits our ability to model and accurately capture the continuous anatomical changes related to disease progression in individual subjects. To address this problem, we propose a novel 4D (3DxT) diffusion-based generative framework that effectively models and synthesizes longitudinal brain anatomy over time, conditioned on available clinical variables such as health status, age, sex, and other relevant factors. Moreover, while most current approaches focus on manipulating image intensity or texture, our method explicitly learns the data distribution of topology-preserving spatiotemporal deformations to effectively capture the geometric changes of brain structures over time. This design enables the realistic generation of future anatomical states and the reconstruction of anatomically consistent disease trajectories, providing a more faithful representation of longitudinal brain changes. We validate our model through both synthetic sequence generation and downstream longitudinal disease classification, as well as brain segmentation. Experiments on two large-scale longitudinal neuroimage datasets demonstrate that our method outperforms state-of-the-art baselines in generating anatomically accurate, temporally consistent, and clinically meaningful brain trajectories. Our code is available on Github.",
+      "published_date": "2026-04-24",
+      "arxiv_id": "2604.22700v1",
+      "url": "https://arxiv.org/abs/2604.22700v1",
+      "categories": [
+        "cs.CV"
+      ],
+      "relevance_score": 0.0238,
+      "rank": 5,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Multimodal synthesis of MRI and tabular data with diffusion in a joint latent space via cross-attention",
+      "authors": [
+        "Daniel Mensing",
+        "Jan Kapar",
+        "Jochen G. Hirsch",
+        "Matthias Günther",
+        "Horst Hahn",
+        "Marvin N. Wright"
+      ],
+      "abstract": "We propose a multimodal latent diffusion model that jointly synthesizes volumetric magnetic resonance imaging (MRI) and tabular clinical data within a shared latent space via cross-attention. This approach enables coherent joint representation learning of MRI and tabular modalities for generative modeling. Our model utilizes a variational autoencoder to fuse the two modalities before diffusion-based synthesis, allowing modality-appropriate reconstruction with separate decoders for MRI and tabular data. We evaluated the framework on data from the German National Cohort (NAKO Gesundheitsstudie), comprising over 10,000 participants with MRI scans and clinical tabular features such as age, sex, body measurements, and ethnicity. The generated MRI volumes exhibited anatomical plausibility and body composition consistent with the synthesized tabular attributes. Quantitative evaluation using Fréchet distance and precision-recall metrics confirmed high-fidelity image generation. In the tabular modality, our model outperformed CTGAN across standard evaluation metrics and achieved results comparable to TVAE, demonstrating competitive performance relative to established unimodal baselines. This work is, to our knowledge, the first to demonstrate the feasibility of jointly modeling MRI and mixed-type tabular data in a single latent diffusion framework, offering a proof-of-concept for generating coherent synthetic multimodal patient data and aligning with the broader goal of developing digital twins in healthcare.",
+      "published_date": "2026-05-05",
+      "arxiv_id": "2605.06699v1",
+      "url": "https://arxiv.org/abs/2605.06699v1",
+      "categories": [
+        "eess.IV",
+        "cs.AI",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "relevance_score": 0.0214,
+      "rank": 6,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Estimating Population Viral Load Contextual Exposure Using GPS-Derived Activity Spaces in Rural South Africa",
+      "authors": [
+        "Zhaoxing Wu",
+        "Haoyang Wu",
+        "Thulile Mathenjwa",
+        "Elphas Okango",
+        "Khai Hoan Tram",
+        "Margot Otto",
+        "Maxime Inghels",
+        "Paul Mee",
+        "Diego Cuadros",
+        "Hae-Young Kim",
+        "Till Bärnighausen",
+        "Frank Tanser",
+        "Adrian Dobra"
+      ],
+      "abstract": "This article introduces novel methodologies for estimating contextual exposure to HIV population viral load using GPS data. We propose a comprehensive analytical framework comprising (i) local (grid-cell level) estimation of HIV population viral load, (ii) derivation of individual activity spaces from GPS trajectories, and (iii) quantification of contextual exposure to HIV within these activity spaces. We integrate HIV surveillance and sociodemographic survey data with GPS-based mobility data collected in rural KwaZulu-Natal, South Africa, to characterize mobility patterns among young adults aged 20-30 years. Using derived measures of mobility and contextual exposure, we assess whether participants' sex and age systematically influence the magnitude, configuration, and heterogeneity of their mobility patterns. Furthermore, we describe analytical approaches to examine how contextual exposure to HIV evolves as activity spaces extend beyond static residential locations, outlining procedures to identify GPS-tracked participants at elevated risk of HIV acquisition. KEYWORDS: Population viral load exposure; GPS-based mobility analysis; Activity space",
+      "published_date": "2026-04-30",
+      "arxiv_id": "2604.27338v1",
+      "url": "https://arxiv.org/abs/2604.27338v1",
+      "categories": [
+        "stat.AP"
+      ],
+      "relevance_score": 0.0196,
+      "rank": 7,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "CTseg: A Tool for Brain CT Segmentation, Spatial Normalisation, and Volumetrics",
+      "authors": [
+        "Mikael Brudfors"
+      ],
+      "abstract": "This paper presents and validates CTseg, a freely available software for brain CT segmentation, spatial normalisation, and volumetrics. CTseg builds on the Multi-Brain generative modelling framework, providing a CT-specific pipeline that produces tissue maps, deformation fields, and brain volume estimates in the same format as SPM's unified segmentation, thereby extending SPM's established analysis chain from MRI to CT. CTseg is designed for routine hospital CT scans without requiring preprocessing or resampling in deployment. Although CTseg has been adopted in clinical research spanning, among other things, stroke, dementia, and brain morphometry, a systematic validation against an independent reference standard has been lacking. Using paired MR/CT head scans, we evaluate CTseg across four dimensions: segmentation accuracy against an MRI-derived silver standard; spatial normalisation consistency through group-average sharpness and voxelwise coefficient of variation; brain volume agreement via intraclass correlation and Bland-Altman analysis; and downstream sex classification performance from normalised tissue maps. As a baseline, we apply SPM's MRI-based unified segmentation directly to the CT images. CTseg significantly outperformed this baseline for segmentation and normalisation, showed stronger TBV agreement, and achieved comparable TIV agreement. CTseg is freely available at https://github.com/WCHN/CTseg, and all experiment code is included in the repository for full reproducibility.",
+      "published_date": "2026-05-06",
+      "arxiv_id": "2605.05154v1",
+      "url": "https://arxiv.org/abs/2605.05154v1",
+      "categories": [
+        "eess.IV"
+      ],
+      "relevance_score": 0.0192,
+      "rank": 8,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Correcting heterogeneous diagnostic bias when developing clinical prediction models using causal hidden Markov models",
+      "authors": [
+        "Jose Benitez-Aurioles",
+        "Ricardo Silva",
+        "Brian McMillan",
+        "Matthew Sperrin"
+      ],
+      "abstract": "In routine care, individuals identified a priori as high-risk are usually tested for conditions more frequently. Protected attributes, such as sex or ethnicity may also determine testing frequency. Such heterogeneous detection rates across a population induce label error. This causes systematic model error for specific groups and biases performance metrics during validation. This paper proposes a method to correct for such bias in prediction models due to differential diagnostic delay. We use a causal inference framework to define our target estimand: an individual's diagnosis probability in a counterfactual scenario where their diagnosis rate matches that of a reference group. We model the longitudinal process as a hidden Markov model, in which confirmatory test results are emissions from a latent progressive disease stage. We validate our approach in simulated data and apply it to a case study of chronic kidney disease prediction using electronic health records. In simulations, our method reduces prediction bias and improves calibration-in-the-large, correcting the Observed:Expected ratio in the underdiagnosed group from 1.34 (standard deviation: 0.09) in a model developed without any correction for underdiagnosis bias to 1.02 (0.09). Violations of assumptions in the simulation affected the estimation of model parameters, but the proposed approach nonetheless remained better calibrated than the standard model. In the clinical case study, we identify diabetes as the main driver of observability, with an odds ratio of 10.36 (95% confidence interval, 9.80 - 11.02) in 6-month urine albumin-creatinine ratio testing rate. Using our approach to predict the counterfactual diagnostic rate in patients without diabetes, we improved the Observed:Expected ratio of a developed clinical prediction model from 1.55 (1.51 - 1.59) to 1.01 (0.98 - 1.04).",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.06059v1",
+      "url": "https://arxiv.org/abs/2605.06059v1",
+      "categories": [
+        "stat.AP",
+        "cs.LG"
+      ],
+      "relevance_score": 0.0192,
+      "rank": 9,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Prediction of Alzheimer's Disease Risk Factors from Retinal Images via Deep Learning: Development and Validation of Biologically Relevant Morphological Associations in the UK Biobank",
+      "authors": [
+        "Seowung Leem",
+        "Yunchao Yang",
+        "Adam J. Woods",
+        "Ruogu Fang"
+      ],
+      "abstract": "The systemic, metabolic, lifestyle factors have established associations with Alzheimer's Disease (AD) through epidemiologic and AD-specific biomarker studies. Whether colored fundus photography (CFP) contains retinal structural signatures corresponding to these AD-related risk domains remains unclear. To determine whether deep learning (DL) models can predict 12 AD-related risk factors from CFP and to characterize the retinal structures underlying these predictions, thereby assessing whether CFP reflects pathways to AD vulnerability. Using UK Biobank CFPs, DL models were trained using 62,876 images from 44,501 unique participants to predict 12 factors linked to AD incidence: 6 categorical (sex, smoking, sleeplessness, economic status, alcohol use, depression) and 6 continuous (age, age at completing education, BMI, systolic, diastolic blood pressure, HbA1c). Model performance, model saliency, and saliency-derived scores (CAM-Score) were evaluated and compared to retinal morphometry. The scores were also compared between incident-AD cases (average 8.55 years before onset) and matched controls. Performance of DL ranged from AUROC= 0.5654-0.9480 for categorical and R2=-0.0291-0.7620 for continuous factors, outperforming most of the morphometry-machine learning models. Saliency-based score consistently highlighted biologically meaningful regions, particularly the optic nerve head and retinal vasculature. It also aligned with present morphometric variations. Several saliency-based scores differed significantly between incident AD and matched controls, suggesting potential overlap between retinal correlates of risk factors and preclinical AD-associated changes. CFP encodes retinal signatures linked to AD risk factors. Although not diagnostic, DL-derived retinal representations may uncover biologically meaningful risk-related structural changes mirroring the potential AD vulnerability.",
+      "published_date": "2026-05-01",
+      "arxiv_id": "2605.00665v1",
+      "url": "https://arxiv.org/abs/2605.00665v1",
+      "categories": [
+        "cs.CV"
+      ],
+      "relevance_score": 0.0154,
+      "rank": 10,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    }
+  ],
+  "top_k_papers": [
+    {
+      "title": "Differential Analysis of Microbial Interaction Networks",
+      "authors": [
+        "Marianna Milano",
+        "Pietro Hiram Guzzi"
+      ],
+      "abstract": "Microbiome studies increasingly indicate that disease-associated shifts cannot be understood from compositional changes alone. The functional architecture of microbial communities encoded in patterns of association among microbial gene families may reveal how these systems reorganize across biological conditions. Here, we present a network-based framework for characterizing microbiome rewiring across conditions. The approach combines condition-specific network inference, differential network analysis and pathway enrichment to identify interactions that are gained, lost or altered between groups, with a specific focus on sex-dependent differences. We apply the framework to inflammatory bowel disease, type 2 diabetes and atherosclerotic cardiovascular disease, comparing male and female specific microbial gene-family networks within each disease context. Across these settings, differential networks reveal extensive rewiring of microbial functional interactions, suggesting that microbiome alterations are shaped not only by changes in abundance but also by shifts in community organization. Importantly, pathway enrichment of rewired interactions uncovers functional signals that are not apparent from individual networks alone, highlighting latent disease and sex associated mechanisms. Code, data and supplementary information are available on the web site.",
+      "published_date": "2026-04-26",
+      "arxiv_id": "2604.23773v1",
+      "url": "https://arxiv.org/abs/2604.23773v1",
+      "categories": [
+        "q-bio.OT"
+      ],
+      "relevance_score": 0.05,
+      "rank": 1,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Equation Learning for multiscale models of infectious diseases",
+      "authors": [
+        "James W. G. Doran",
+        "Cameron A. Smith",
+        "Christian A. Yates",
+        "Ruth Bowness"
+      ],
+      "abstract": "Tuberculosis (TB) is an airborne disease caused by the pathogen Mycobacterium tuberculosis. In 2023, according to the World Health Organization, it ''probably'' replaced COVID-19 as the leading cause of death from an infectious agent globally; in the nineteenth century, one in seven of all humans deaths were as a result of tuberculosis. More than 10 million people are diagnosed with TB every year. The majority of cases in adults occur in males (62.5% of all global adult cases in 2023, compared to 37.5% in females). The main reasons for males suffering from a higher burden of global TB cases, compared to females, is likely to be a combination of within-host factors, such as differences in immune response, and population-scale factors, such as likelihood of completing treatment. To investigate the impact different scales have in determining this higher TB burden in males, we have developed a gender/sex-stratified multiscale framework. We have learnt ordinary differential equations (ODEs) to capture the average output of an agent-based within-host model, and used the resulting equations to describe the within-host scales of the multiscale framework. We evolve the population demographics at the between-host scale using ODEs, and link the scales with stochastic coupling functions. We have considered counterfactual scenarios to elucidate the impact of sex and gender on the infectious disease dynamics of TB. This paper is intended to provide a proof-of-concept for the development and implementation of the presented multiscale framework.",
+      "published_date": "2026-04-27",
+      "arxiv_id": "2604.25038v1",
+      "url": "https://arxiv.org/abs/2604.25038v1",
+      "categories": [
+        "q-bio.PE"
+      ],
+      "relevance_score": 0.0444,
+      "rank": 2,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Whole-body CT attenuation and volume charts from routine clinical scans via evidence-grounded LLM report filtering",
+      "authors": [
+        "Christian Wachinger",
+        "Bernhard Renger",
+        "Christopher Späth",
+        "Jan Kirschke",
+        "Marcus Makowski"
+      ],
+      "abstract": "Interpreting quantitative CT biomarkers, such as organ volume and tissue attenuation, requires large-scale healthy reference distributions. However, creating these is challenging because clinical datasets are often heavily enriched with pathology. Here, we develop an evidence-grounded, cross-verified large language model (LLM) ensemble to filter pathological findings from radiology reports, enabling the construction of pathology-reduced cohorts from over 350,000 CT examinations. Five LLMs, first, flag structure-level abnormality candidates grounded in verbatim report evidence and, second, resolve disagreements via cross-verification. Using distribution-aware generalized additive models for location, scale, and shape, we establish comprehensive whole-body reference charts for 106 anatomical structures (volumes and attenuation) across adulthood, accounting for age, sex, contrast enhancement, and acquisition parameters. Longitudinal analyses reveal structure- and contrast-dependent changes distinct from cross-sectional trends. These resources facilitate covariate-adjusted centile scoring from routine CT, supporting standardized quantitative phenotyping, multi-site imaging studies, and scalable opportunistic screening research.",
+      "published_date": "2026-05-07",
+      "arxiv_id": "2605.05933v1",
+      "url": "https://arxiv.org/abs/2605.05933v1",
+      "categories": [
+        "cs.CV"
+      ],
+      "relevance_score": 0.0271,
+      "rank": 3,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Multilevel Regression Modeling of Covariance Matrix Outcomes",
+      "authors": [
+        "Michelle Murphy Green",
+        "Xi Luo",
+        "Brian S. Caffo",
+        "Yi Zhao"
+      ],
+      "abstract": "Covariance matrix outcomes arise naturally in neuroimaging experiments to study brain functional connectivity. It is also of interest to understand how brain network organization varies with subject-level covariates. Existing covariance regression methods operate in a single-level framework and do not accommodate the hierarchically nested data structure in which subjects are grouped into clusters, such as age cohorts in lifespan studies. A Multilevel Covariate-Assisted Principal Regression (MCAP) framework is introduced, which identifies, for each cluster, a linear projection such that a generalized linear mixed effects model can be formulated with the covariates. The cluster-specific projections are modeled on the unit sphere via a von Mises-Fisher distribution, enabling principled borrowing of information across clusters. Model parameters are estimated by maximizing a hierarchical likelihood. For inference, a two-stage bootstrap procedure is proposed. Asymptotic properties of the estimators are established. Simulation studies demonstrate that MCAP substantially outperforms single-level competitors in estimating regression coefficients. Applied to the Human Connectome Project Lifespan Study spanning ages from five to ninety, MCAP identifies a dominant spectral brain network capturing age and sex effects on functional connectivity, and reveals findings including the convergence of neural reorganization patterns in late adulthood and the coordinated lifespan modulation of cross-network regions linked to language and executive function.",
+      "published_date": "2026-05-06",
+      "arxiv_id": "2605.05371v1",
+      "url": "https://arxiv.org/abs/2605.05371v1",
+      "categories": [
+        "stat.ME"
+      ],
+      "relevance_score": 0.0251,
+      "rank": 4,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    },
+    {
+      "title": "Generative Modeling of Neurodegenerative Brain Anatomy with 4D Longitudinal Diffusion Model",
+      "authors": [
+        "Nivetha Jayakumar",
+        "Swakshar Deb",
+        "Bahram Jafrasteh",
+        "Qingyu Zhao",
+        "Miaomiao Zhang"
+      ],
+      "abstract": "Understanding and predicting the progression of neurodegenerative diseases remains a major challenge in medical AI, with significant implications for early diagnosis, disease monitoring, and treatment planning. However, most available longitudinal neuroimaging datasets are temporally sparse with a few follow-up scans per subject. This scarcity of temporal data limits our ability to model and accurately capture the continuous anatomical changes related to disease progression in individual subjects. To address this problem, we propose a novel 4D (3DxT) diffusion-based generative framework that effectively models and synthesizes longitudinal brain anatomy over time, conditioned on available clinical variables such as health status, age, sex, and other relevant factors. Moreover, while most current approaches focus on manipulating image intensity or texture, our method explicitly learns the data distribution of topology-preserving spatiotemporal deformations to effectively capture the geometric changes of brain structures over time. This design enables the realistic generation of future anatomical states and the reconstruction of anatomically consistent disease trajectories, providing a more faithful representation of longitudinal brain changes. We validate our model through both synthetic sequence generation and downstream longitudinal disease classification, as well as brain segmentation. Experiments on two large-scale longitudinal neuroimage datasets demonstrate that our method outperforms state-of-the-art baselines in generating anatomically accurate, temporally consistent, and clinically meaningful brain trajectories. Our code is available on Github.",
+      "published_date": "2026-04-24",
+      "arxiv_id": "2604.22700v1",
+      "url": "https://arxiv.org/abs/2604.22700v1",
+      "categories": [
+        "cs.CV"
+      ],
+      "relevance_score": 0.0238,
+      "rank": 5,
+      "ranking_reason": "Matches query terms in the abstract: sex."
+    }
+  ]
+}

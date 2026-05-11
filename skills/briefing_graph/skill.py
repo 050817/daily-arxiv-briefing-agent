@@ -3,8 +3,10 @@ from __future__ import annotations
 import argparse
 import html
 import itertools
+import json
 import math
 import re
+import shutil
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -153,6 +155,11 @@ class BriefingGraphSkill:
         output_path = input_data.get("output") or input_data.get("output_path") or self.paths.get(
             "report", "outputs/reports/daily_briefing.md"
         )
+        output_pdf_path = (
+            input_data.get("output_pdf")
+            or input_data.get("output_pdf_path")
+            or self.paths.get("report_pdf", "outputs/reports/daily_briefing.pdf")
+        )
         figures_dir = input_data.get("figures_dir") or self.paths.get("figures_dir", "outputs/figures")
         retrieval_error = str(input_data.get("retrieval_error") or "").strip()
         retrieved_paper_count = input_data.get("retrieved_paper_count")
@@ -175,9 +182,20 @@ class BriefingGraphSkill:
             retrieval_error=retrieval_error,
             retrieved_paper_count=retrieved_paper_count,
         )
+        pdf_path = self.generate_pdf_report(
+            query,
+            papers,
+            summaries,
+            graph_analysis,
+            figures,
+            output_pdf_path,
+            retrieval_error=retrieval_error,
+            retrieved_paper_count=retrieved_paper_count,
+        )
 
         return {
             "report_markdown": report_path,
+            "report_pdf": pdf_path,
             "summaries": summaries,
             "graph_analysis": graph_analysis,
             "figures": figures,
@@ -296,6 +314,54 @@ class BriefingGraphSkill:
         analysis = self.analyze_graph(graph_dict)
         self._write_keyword_graph_svg(graph_dict, analysis, output_path)
 
+    def archive_outputs(
+        self,
+        query: str,
+        artifacts: dict[str, Any],
+        *,
+        archive_dir: str | None = None,
+        messages: list[dict[str, str]] | None = None,
+        metadata_extra: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        root = ensure_dir(archive_dir or self.paths.get("archive_dir", "archives"))
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        archive_id = f"{self._slugify(query or 'untitled')}_{timestamp}"
+        destination = root / archive_id
+        destination.mkdir(parents=True, exist_ok=True)
+
+        copied: dict[str, str] = {}
+        for key, value in artifacts.items():
+            if not value:
+                continue
+            source = Path(str(value))
+            if not source.is_absolute():
+                source = Path.cwd() / source
+            if not source.exists() or source.is_dir():
+                continue
+            target_name = self._archive_filename(key, source)
+            target = destination / target_name
+            shutil.copy2(source, target)
+            copied[key] = target.name
+
+        chat_messages = messages or []
+        (destination / "chat.json").write_text(
+            json.dumps({"messages": chat_messages}, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        metadata = {
+            "id": archive_id,
+            "query": query,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "files": copied,
+        }
+        if metadata_extra:
+            metadata.update(metadata_extra)
+        (destination / "metadata.json").write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        return {"id": archive_id, "path": str(destination), "files": copied, "metadata": metadata}
+
     def generate_markdown_report(
         self,
         query: str,
@@ -320,6 +386,380 @@ class BriefingGraphSkill:
         )
         resolved.write_text(report, encoding="utf-8")
         return str(resolved)
+
+    def generate_pdf_report(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+        figures: list[str] | None = None,
+        output_path: str | None = None,
+        retrieval_error: str = "",
+        retrieved_paper_count: int | None = None,
+    ) -> str:
+        output_path = output_path or self.paths.get("report_pdf", "outputs/reports/daily_briefing.pdf")
+        resolved = ensure_parent(output_path)
+        sections = self._build_pdf_sections(
+            query,
+            papers,
+            summaries,
+            graph_analysis,
+            figures or [],
+            retrieval_error=retrieval_error,
+            retrieved_paper_count=retrieved_paper_count,
+        )
+        self._write_pdf_report(query, sections, str(resolved))
+        return str(resolved)
+
+    def _build_pdf_sections(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+        figures: list[str],
+        retrieval_error: str = "",
+        retrieved_paper_count: int | None = None,
+    ) -> list[dict[str, Any]]:
+        central_keywords = graph_analysis.get("central_keywords", [])
+        communities = graph_analysis.get("communities", [])
+        relevance_warning = self._build_relevance_warning(query, papers)
+        top_keywords = ", ".join(item["keyword"] for item in central_keywords[:5]) or "Not available"
+        search_status = "Completed"
+        if retrieval_error:
+            search_status = f"Retrieval failed: {self._format_retrieval_error(retrieval_error)}"
+        elif retrieved_paper_count == 0 and not papers:
+            search_status = "Completed, but no papers were available for briefing"
+
+        return [
+            {
+                "title": "1. Executive Summary",
+                "body": [
+                    self._executive_summary_text(query, papers, central_keywords, relevance_warning),
+                    'Evidence policy: summaries use only paper titles and abstracts; unsupported fields say "Not mentioned in abstract".',
+                ],
+            },
+            {
+                "title": "2. Search Overview",
+                "body": [
+                    f"Query: {query or 'Not provided'}",
+                    f"Retrieved papers supplied to briefing: {retrieved_paper_count if retrieved_paper_count is not None else len(papers)}",
+                    f"Papers included in report: {len(papers)}",
+                    f"Search status: {search_status}",
+                ],
+            },
+            {
+                "title": "3. Top Papers to Read",
+                "table": {
+                    "headers": ["Rank", "Title", "Score", "Categories"],
+                    "rows": [
+                        [
+                            str(paper.get("rank", index)),
+                            str(paper.get("title", "Untitled paper")),
+                            str(paper.get("relevance_score", "")),
+                            ", ".join(str(category) for category in paper.get("categories", [])) or "Not provided",
+                        ]
+                        for index, paper in enumerate(papers, start=1)
+                    ],
+                },
+                "empty": "No papers were available for ranking.",
+            },
+            {
+                "title": "4. Paper Cards",
+                "cards": [
+                    {
+                        "heading": f"{index}. {summary['title']}",
+                        "items": [
+                            ("Topic relevance", summary["topic_relevance"]),
+                            ("Problem", summary["problem"]),
+                            ("Method", summary["method"]),
+                            ("Contribution", summary["contribution"]),
+                            ("Evidence", summary["experiment_or_evidence"]),
+                            ("Limitation", summary["limitation"]),
+                        ],
+                    }
+                    for index, summary in enumerate(summaries, start=1)
+                ],
+                "empty": "No paper cards were generated.",
+            },
+            {
+                "title": "5. Research Trend Map",
+                "body": [
+                    (
+                        "The most connected extracted topics are "
+                        f"{top_keywords}. This describes recurring vocabulary in the selected abstracts, "
+                        "not the broader arXiv corpus."
+                    )
+                    if papers
+                    else "Trend analysis was not run because no papers were available."
+                ],
+            },
+            {
+                "title": "6. Keyword / Topic Network",
+                "body": [
+                    f"Nodes: {graph_analysis.get('num_nodes', 0)}",
+                    f"Edges: {graph_analysis.get('num_edges', 0)}",
+                    f"Density: {graph_analysis.get('density', 0.0)}",
+                    f"Average degree: {graph_analysis.get('average_degree', 0.0)}",
+                    "Central keywords: " + top_keywords,
+                    "Figure files: " + (", ".join(self._display_path(figure) for figure in figures) if figures else "None"),
+                    self._format_community_summary(communities),
+                ],
+            },
+            {
+                "title": "7. Novelty & Relevance Analysis",
+                "body": self._novelty_relevance_points(query, papers, summaries, relevance_warning),
+            },
+            {
+                "title": "8. Suggested Reading Order",
+                "body": [
+                    f"{index}. {paper.get('title', 'Untitled paper')} - {paper.get('ranking_reason', 'Ranked by relevance score.')}"
+                    for index, paper in enumerate(papers, start=1)
+                ]
+                or ["No reading order is available."],
+            },
+            {
+                "title": "9. Possible Research Ideas",
+                "body": self._research_idea_points(query, central_keywords, summaries),
+            },
+            {
+                "title": "10. Limitations of This Search",
+                "body": self._search_limitations(retrieval_error, papers, relevance_warning),
+            },
+        ]
+
+    def _write_pdf_report(self, query: str, sections: list[dict[str, Any]], output_path: str) -> None:
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.enums import TA_CENTER
+            from reportlab.lib.pagesizes import letter
+            from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+            from reportlab.lib.units import inch
+            from reportlab.platypus import (
+                KeepTogether,
+                PageBreak,
+                Paragraph,
+                SimpleDocTemplate,
+                Spacer,
+                Table,
+                TableStyle,
+            )
+        except ImportError as exc:
+            raise RuntimeError(
+                "PDF generation requires reportlab. Install dependencies with: "
+                "python -m pip install -r requirements.txt"
+            ) from exc
+
+        styles = getSampleStyleSheet()
+        styles.add(
+            ParagraphStyle(
+                name="ReportTitle",
+                parent=styles["Title"],
+                alignment=TA_CENTER,
+                fontName="Helvetica-Bold",
+                fontSize=20,
+                leading=24,
+                spaceAfter=12,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="SectionTitle",
+                parent=styles["Heading2"],
+                fontName="Helvetica-Bold",
+                fontSize=13,
+                leading=16,
+                textColor=colors.HexColor("#0f172a"),
+                spaceBefore=10,
+                spaceAfter=8,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="SmallBody",
+                parent=styles["BodyText"],
+                fontName="Helvetica",
+                fontSize=8.7,
+                leading=11.2,
+                spaceAfter=5,
+            )
+        )
+        styles.add(
+            ParagraphStyle(
+                name="CardHeading",
+                parent=styles["Heading3"],
+                fontName="Helvetica-Bold",
+                fontSize=10,
+                leading=12,
+                spaceBefore=6,
+                spaceAfter=4,
+            )
+        )
+
+        story: list[Any] = []
+        story.append(Paragraph("Daily arXiv Research Briefing", styles["ReportTitle"]))
+        story.append(Paragraph(f"Query: {self._pdf_escape(query or 'Not provided')}", styles["BodyText"]))
+        story.append(Paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d')}", styles["BodyText"]))
+        story.append(Spacer(1, 0.14 * inch))
+
+        for section in sections:
+            story.append(Paragraph(self._pdf_escape(section["title"]), styles["SectionTitle"]))
+            if section.get("body"):
+                for item in section["body"]:
+                    story.append(Paragraph(self._pdf_escape(str(item)), styles["SmallBody"]))
+            if section.get("table"):
+                rows = section["table"]["rows"]
+                if rows:
+                    headers = section["table"]["headers"]
+                    table_data = [
+                        [Paragraph(self._pdf_escape(str(cell)), styles["SmallBody"]) for cell in headers]
+                    ]
+                    for row in rows:
+                        table_data.append(
+                            [Paragraph(self._pdf_escape(str(cell)), styles["SmallBody"]) for cell in row]
+                        )
+                    table = Table(table_data, colWidths=[0.45 * inch, 3.45 * inch, 0.75 * inch, 1.25 * inch])
+                    table.setStyle(
+                        TableStyle(
+                            [
+                                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e2e8f0")),
+                                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#cbd5e1")),
+                                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                                ("LEFTPADDING", (0, 0), (-1, -1), 5),
+                                ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+                                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                            ]
+                        )
+                    )
+                    story.append(table)
+                    story.append(Spacer(1, 0.08 * inch))
+                else:
+                    story.append(Paragraph(self._pdf_escape(section.get("empty", "No data available.")), styles["SmallBody"]))
+            if section.get("cards"):
+                for card in section["cards"]:
+                    card_story = [Paragraph(self._pdf_escape(card["heading"]), styles["CardHeading"])]
+                    for label, value in card["items"]:
+                        card_story.append(
+                            Paragraph(
+                                f"<b>{self._pdf_escape(label)}:</b> {self._pdf_escape(str(value))}",
+                                styles["SmallBody"],
+                            )
+                        )
+                    story.append(KeepTogether(card_story))
+                    story.append(Spacer(1, 0.05 * inch))
+            elif "cards" in section:
+                story.append(Paragraph(self._pdf_escape(section.get("empty", "No cards available.")), styles["SmallBody"]))
+            if section["title"].startswith("4. "):
+                story.append(PageBreak())
+            else:
+                story.append(Spacer(1, 0.07 * inch))
+
+        doc = SimpleDocTemplate(
+            output_path,
+            pagesize=letter,
+            rightMargin=0.62 * inch,
+            leftMargin=0.62 * inch,
+            topMargin=0.62 * inch,
+            bottomMargin=0.58 * inch,
+            title="Daily arXiv Research Briefing",
+            author="Daily arXiv Briefing Agent",
+        )
+        doc.build(story, onFirstPage=self._pdf_page_footer, onLaterPages=self._pdf_page_footer)
+
+    def _pdf_page_footer(self, canvas: Any, doc: Any) -> None:
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColorRGB(0.35, 0.4, 0.48)
+        canvas.drawString(doc.leftMargin, 0.35 * 72, "Daily arXiv Research Briefing")
+        canvas.drawRightString(8.5 * 72 - doc.rightMargin, 0.35 * 72, f"Page {doc.page}")
+        canvas.restoreState()
+
+    def _pdf_escape(self, value: str) -> str:
+        return html.escape(self._clean_text(value), quote=False)
+
+    def _executive_summary_text(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        central_keywords: list[dict[str, Any]],
+        relevance_warning: str,
+    ) -> str:
+        if not papers:
+            return f"No papers were available for query: {query or 'Not provided'}."
+        top_title = papers[0].get("title", "the top-ranked paper")
+        keywords = ", ".join(item["keyword"] for item in central_keywords[:3]) or "no stable keywords"
+        warning = f" Relevance caution: {relevance_warning}" if relevance_warning else ""
+        return (
+            f"This briefing reviews {len(papers)} arXiv papers retrieved for '{query}'. "
+            f"The top-ranked paper is '{top_title}'. The selected abstracts most often connect around: {keywords}."
+            f"{warning}"
+        )
+
+    def _format_community_summary(self, communities: list[dict[str, Any]]) -> str:
+        if not communities:
+            return "Keyword communities: none detected"
+        parts = []
+        for community in communities[:3]:
+            keywords = ", ".join(community.get("keywords", [])[:8])
+            parts.append(f"Community {community.get('id')}: {keywords}")
+        return "Keyword communities: " + "; ".join(parts)
+
+    def _novelty_relevance_points(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        relevance_warning: str,
+    ) -> list[str]:
+        if not papers:
+            return ["No novelty or relevance analysis is available because no papers were selected."]
+        points = []
+        if relevance_warning:
+            points.append(relevance_warning)
+        else:
+            points.append(f"All selected papers were ranked against the query '{query}' using title and abstract text.")
+        for summary in summaries[:3]:
+            points.append(f"{summary['title']}: {summary['topic_relevance']}")
+        return points
+
+    def _research_idea_points(
+        self,
+        query: str,
+        central_keywords: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+    ) -> list[str]:
+        if not summaries:
+            return ["No research ideas were generated because no papers were selected."]
+        keywords = [item["keyword"] for item in central_keywords[:4]]
+        keyword_text = ", ".join(keywords) if keywords else query or "the search topic"
+        return [
+            f"Compare how different papers operationalize {query or 'the query'} across datasets, models, or evaluation settings.",
+            f"Use the recurring topic cluster ({keyword_text}) as a starting point for a focused literature review.",
+            "Design a follow-up search that adds a domain qualifier to reduce broad keyword matches.",
+        ]
+
+    def _search_limitations(
+        self,
+        retrieval_error: str,
+        papers: list[dict[str, Any]],
+        relevance_warning: str,
+    ) -> list[str]:
+        if retrieval_error and not papers:
+            return [
+                f"Primary limitation: {self._format_retrieval_error(retrieval_error)}",
+                "No substantive research conclusions should be drawn from an empty retrieval result.",
+                "Retry later or run the briefing from cached paper JSON.",
+            ]
+        limitations = [
+            "The report only uses titles, abstracts, metadata, and ranking fields.",
+            "It does not read full PDFs, citations, appendices, code repositories, or external web pages.",
+            "Keyword communities are based on co-occurrence in the selected Top-K papers and are descriptive rather than causal.",
+        ]
+        if relevance_warning:
+            limitations.append(relevance_warning)
+        return limitations
 
     def _build_report_markdown(
         self,
@@ -831,6 +1271,22 @@ class BriefingGraphSkill:
         except ValueError:
             return str(path)
 
+    def _slugify(self, value: str) -> str:
+        tokens = re.findall(r"[A-Za-z0-9]+", value.lower())
+        slug = "-".join(tokens[:8])
+        return slug or "untitled"
+
+    def _archive_filename(self, key: str, source: Path) -> str:
+        names = {
+            "report_markdown": "report.md",
+            "report_pdf": "report.pdf",
+            "keyword_graph": "keyword_graph.svg",
+            "top_keywords": "top_keywords.svg",
+            "raw_papers": "raw_papers.json",
+            "ranked_papers": "ranked_papers.json",
+        }
+        return names.get(key, source.name)
+
     def _format_retrieval_error(self, error: str) -> str:
         if "HTTP Error 429" in error:
             attempts_match = re.search(r"after\s+(\d+)\s+attempt", error)
@@ -891,6 +1347,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--query", type=str, default="")
     parser.add_argument("--top_k", type=int, default=5)
     parser.add_argument("--output", type=str, default="outputs/reports/daily_briefing.md")
+    parser.add_argument("--output-pdf", type=str, default="outputs/reports/daily_briefing.pdf")
     add_common_output_arg(parser)
     return parser.parse_args()
 
@@ -906,6 +1363,7 @@ def main() -> None:
                 "query": args.query or payload.get("query", ""),
                 "top_k_papers": top_k_papers,
                 "output": args.output,
+                "output_pdf": args.output_pdf,
             }
         )
     except SkillNotImplementedError as exc:

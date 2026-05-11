@@ -75,6 +75,7 @@ class DailyArxivBriefingAgent:
                         }
                     )
                     output_paths["report"] = self.paths.get("report", "outputs/reports/daily_briefing.md")
+                    output_paths["report_pdf"] = self.paths.get("report_pdf", "outputs/reports/daily_briefing.pdf")
 
                 completed.append(stage)
             except SkillNotImplementedError as exc:

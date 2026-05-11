@@ -1,0 +1,114 @@
+{
+  "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\gnn_misinformation_briefing.md",
+  "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\gnn_misinformation_briefing.pdf",
+  "summaries": [
+    {
+      "title": "Graph Neural Networks for Social Misinformation Detection",
+      "one_sentence_summary": "This paper studies graph neural networks for misinformation detection in social networks.",
+      "topic_relevance": "This paper studies graph neural networks for misinformation detection in social networks.",
+      "problem": "The title frames the target problem as Social Misinformation Detection.",
+      "method": "This paper studies graph neural networks for misinformation detection in social networks.",
+      "contribution": "Not mentioned in abstract",
+      "experiment_or_evidence": "Not mentioned in abstract",
+      "limitation": "Not mentioned in abstract",
+      "evidence_source": "title and abstract only"
+    }
+  ],
+  "graph_analysis": {
+    "num_nodes": 9,
+    "num_edges": 36,
+    "density": 1.0,
+    "average_degree": 8.0,
+    "central_keywords": [
+      {
+        "keyword": "graph neural networks misinformation detection",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "detection",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "graph",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "misinformation",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "networks",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "neural",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "graph neural networks",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "misinformation detection",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      },
+      {
+        "keyword": "social networks",
+        "paper_count": 1,
+        "weighted_degree": 8,
+        "degree": 8
+      }
+    ],
+    "communities": [
+      {
+        "id": 1,
+        "size": 9,
+        "keywords": [
+          "detection",
+          "graph",
+          "graph neural networks",
+          "graph neural networks misinformation detection",
+          "misinformation",
+          "misinformation detection",
+          "networks",
+          "neural",
+          "social networks"
+        ]
+      }
+    ],
+    "paper_keywords": {
+      "2605.00001": [
+        "graph neural networks misinformation detection",
+        "graph",
+        "neural",
+        "networks",
+        "misinformation",
+        "detection",
+        "misinformation detection",
+        "social networks",
+        "graph neural networks"
+      ]
+    }
+  },
+  "figures": [
+    "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\keyword_graph.svg",
+    "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\top_keywords.svg"
+  ],
+  "retrieval_error": ""
+}

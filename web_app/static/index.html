@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daily arXiv Briefing Web</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">Daily arXiv</div>
+      <button id="newRunButton" class="ghost-button">新实验</button>
+      <div class="section-label">归档</div>
+      <div id="archiveList" class="archive-list"></div>
+    </aside>
+
+    <main class="workspace">
+      <section class="run-panel">
+        <div>
+          <h1>每日 arXiv 论文速递</h1>
+          <p>输入关键词，运行项目 workflow，生成 PDF 报告、关键词图谱，并自动归档。</p>
+        </div>
+
+        <details class="settings-box">
+          <summary>模型 API 设置</summary>
+          <form id="settingsForm" class="settings-form">
+            <label>
+              API URL
+              <input id="apiUrlInput" placeholder="https://www.yunwuai.cc/v1" />
+            </label>
+            <label>
+              Model
+              <input id="modelInput" placeholder="gpt-5.4" />
+            </label>
+            <label>
+              API Key
+              <input id="apiKeyInput" type="password" placeholder="只保存在本机 web_app/local_settings.json" />
+            </label>
+            <button type="submit">保存设置</button>
+          </form>
+          <div id="settingsStatus" class="settings-status">未加载设置</div>
+        </details>
+
+        <form id="runForm" class="run-form">
+          <input id="queryInput" name="query" value="graph neural networks for misinformation detection" placeholder="输入关键词或查询语句" />
+          <div class="controls">
+            <label class="date-control">
+              <span>最近天数</span>
+              <input id="dateDaysInput" type="number" min="1" max="3650" value="7" />
+            </label>
+            <label class="checkbox-label">
+              <input id="allDatesInput" type="checkbox" />
+              <span>全部时间</span>
+            </label>
+            <label>
+              检索数
+              <input id="maxResultsInput" type="number" min="1" max="50" value="10" />
+            </label>
+            <label>
+              Top-K
+              <input id="topKInput" type="number" min="1" max="20" value="5" />
+            </label>
+            <button id="runButton" type="submit">运行</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="status-row">
+        <div id="statusText">准备就绪</div>
+        <div class="download-links">
+          <a id="pdfDownload" href="#" download hidden>下载 PDF</a>
+          <a id="graphDownload" href="#" download hidden>下载图谱</a>
+          <a id="keywordsDownload" href="#" download hidden>下载关键词图</a>
+        </div>
+      </section>
+
+      <section class="viewer-grid">
+        <div class="preview-card">
+          <div class="card-header">
+            <span>PDF 预览</span>
+          </div>
+          <iframe id="pdfFrame" title="PDF report preview"></iframe>
+        </div>
+        <div class="preview-card">
+          <div class="card-header">
+            <span>图片预览</span>
+          </div>
+          <div class="image-tabs">
+            <button class="tab active" data-image="graph">Topic Network</button>
+            <button class="tab" data-image="keywords">Top Keywords</button>
+          </div>
+          <div class="image-preview">
+            <img id="figureImage" alt="Report figure preview" />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="chat-panel">
+      <div class="chat-header">
+        <div>
+          <h2>文件对话</h2>
+          <span id="activeArchiveLabel">未选择归档</span>
+        </div>
+      </div>
+      <div id="chatMessages" class="chat-messages"></div>
+      <form id="chatForm" class="chat-form">
+        <textarea id="chatInput" rows="3" placeholder="询问这次报告、PDF、图谱或检索结果..."></textarea>
+        <button type="submit">发送</button>
+      </form>
+    </aside>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
