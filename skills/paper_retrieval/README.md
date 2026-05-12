@@ -31,7 +31,7 @@ The network request behavior is configurable in `config.yaml`:
 Keyword extraction now works in two stages:
 
 - first, an OpenAI Responses API call extracts 2-6 concise technical keyword phrases from the natural-language query;
-- second, those phrases are expanded into broader title/abstract search clauses for arXiv retrieval.
+- second, those phrases are expanded into broader title/abstract search clauses for arXiv retrieval, with concept groups combined using `OR` to maximize recall before downstream ranking/filtering.
 
 The OpenAI call reuses `web_app/local_settings.json` when available, so a model configured in the local web UI can be shared directly with Skill 1. It otherwise falls back to `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`, plus these optional config fields:
 

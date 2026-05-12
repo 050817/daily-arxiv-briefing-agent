@@ -44,7 +44,7 @@ class PaperRetrievalSkillTest(unittest.TestCase):
 
         self.assertEqual(
             search_query,
-            '((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) AND ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection)))',
+            '(((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) OR ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection))))',
         )
 
     def test_build_search_query_broadens_natural_language_query(self):
@@ -54,7 +54,7 @@ class PaperRetrievalSkillTest(unittest.TestCase):
 
         self.assertEqual(
             search_query,
-            '((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) AND ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection)))',
+            '(((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) OR ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection))))',
         )
 
     def test_build_search_query_requires_all_terms_in_short_phrase(self):
@@ -65,6 +65,16 @@ class PaperRetrievalSkillTest(unittest.TestCase):
         self.assertEqual(
             search_query,
             '((ti:"harness engineering" OR abs:"harness engineering") OR ((ti:harness OR abs:harness) AND (ti:engineering OR abs:engineering)))',
+        )
+
+    def test_build_search_query_broadens_long_queries_with_or_chunks(self):
+        skill = PaperRetrievalSkill()
+
+        search_query = skill._build_search_query("graph neural networks misinformation detection")
+
+        self.assertEqual(
+            search_query,
+            '(((ti:"graph neural networks" OR abs:"graph neural networks") OR ((ti:graph OR abs:graph) AND (ti:neural OR abs:neural) AND (ti:networks OR abs:networks))) OR ((ti:"misinformation detection" OR abs:"misinformation detection") OR ((ti:misinformation OR abs:misinformation) AND (ti:detection OR abs:detection))))',
         )
 
     def test_build_search_query_preserves_non_ascii_tokens(self):

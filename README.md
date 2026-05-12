@@ -251,7 +251,7 @@ Skill 1 request reliability can also be tuned in `config.yaml` through:
 - `retrieval.max_retries`
 - `retrieval.retry_backoff_seconds`
 
-Skill 1 now attempts OpenAI-based keyword extraction before building the final arXiv query. It first checks `web_app/local_settings.json` if you have already saved model settings in the local web app, then falls back to environment variables, and finally to the project defaults in `config.yaml`. The behavior is controlled through:
+Skill 1 now attempts OpenAI-based keyword extraction before building the final arXiv query. It first checks `web_app/local_settings.json` if you have already saved model settings in the local web app, then falls back to environment variables, and finally to the project defaults in `config.yaml`. Extracted keyword groups are combined with `OR` to keep retrieval recall high, since later pipeline stages perform ranking and filtering. The behavior is controlled through:
 
 - `retrieval.llm_keyword_extraction_enabled`
 - `retrieval.llm_model`

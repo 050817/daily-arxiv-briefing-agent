@@ -237,10 +237,18 @@ class PaperRetrievalSkill:
         if self._looks_like_arxiv_query(query):
             return query.strip()
 
-        concept_groups = self._concept_groups_from_phrases(keyword_phrases) if keyword_phrases else self._extract_concept_groups(query)
+        concept_groups = (
+            self._concept_groups_from_phrases(keyword_phrases)
+            if keyword_phrases
+            else self._extract_concept_groups(query)
+        )
         if not concept_groups:
             raise ValueError("Query must contain at least one searchable token.")
-        return " AND ".join(self._build_group_clause(group) for group in concept_groups)
+
+        group_clauses = [self._build_group_clause(group) for group in concept_groups]
+        if len(group_clauses) == 1:
+            return group_clauses[0]
+        return self._combine_with_or(group_clauses)
 
     def _resolve_date_range(self, date_range: str) -> tuple[date | None, date | None]:
         value = date_range.strip().lower()
@@ -540,7 +548,9 @@ class PaperRetrievalSkill:
                 alternatives.append(phrase)
             alternatives.append(self._combine_with_and(self._build_term_clause(term) for term in chunk))
             chunk_clauses.append(self._combine_with_or(alternatives))
-        return " AND ".join(chunk_clauses)
+        if len(chunk_clauses) == 1:
+            return chunk_clauses[0]
+        return self._combine_with_or(chunk_clauses)
 
     def _chunk_terms_for_phrases(self, terms: list[str]) -> list[list[str]]:
         chunks: list[list[str]] = []
