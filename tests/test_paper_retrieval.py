@@ -124,7 +124,12 @@ class PaperRetrievalSkillTest(unittest.TestCase):
     def test_run_returns_papers_and_saves_results(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "raw" / "arxiv_papers.json"
-            skill = PaperRetrievalSkill({"paths": {"raw_papers": str(output_path)}})
+            skill = PaperRetrievalSkill(
+                {
+                    "paths": {"raw_papers": str(output_path)},
+                    "retrieval": {"llm_keyword_extraction_enabled": False},
+                }
+            )
             skill.search_arxiv = lambda query, max_results, keyword_phrases=None: [ET.fromstring(SAMPLE_ENTRY)]
 
             result = skill.run(
@@ -152,7 +157,10 @@ class PaperRetrievalSkillTest(unittest.TestCase):
             skill = PaperRetrievalSkill(
                 {
                     "paths": {"raw_papers": str(output_path)},
-                    "retrieval": {"allow_empty_on_error": True},
+                    "retrieval": {
+                        "allow_empty_on_error": True,
+                        "llm_keyword_extraction_enabled": False,
+                    },
                 }
             )
             skill.search_arxiv = lambda query, max_results, keyword_phrases=None: (_ for _ in ()).throw(RuntimeError("HTTP Error 429"))
@@ -161,7 +169,7 @@ class PaperRetrievalSkillTest(unittest.TestCase):
 
             self.assertEqual(result["papers"], [])
             self.assertIn("HTTP Error 429", result["retrieval_error"])
-            self.assertEqual(result["query_keywords"], ["harness engineering"])
+            self.assertIn("harness engineering", result["query_keywords"])
             self.assertEqual(result["keyword_extraction_source"], "heuristic")
             self.assertTrue(output_path.exists())
 

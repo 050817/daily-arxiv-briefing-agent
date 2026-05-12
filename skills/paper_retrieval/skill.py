@@ -16,7 +16,7 @@ from urllib.request import Request, urlopen
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from agent.io_utils import save_json
+from agent.io_utils import load_config, save_json
 from agent.openai_compat import resolve_openai_compatible_config
 from agent.schema import SkillNotImplementedError
 from skills.common import add_common_output_arg, not_implemented_result, print_skill_result
@@ -624,7 +624,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    skill = PaperRetrievalSkill()
+    skill = PaperRetrievalSkill(load_config())
     try:
         result = skill.run(
             {

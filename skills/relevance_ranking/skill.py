@@ -10,7 +10,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from agent.io_utils import load_json, save_json
+from agent.io_utils import load_config, load_json, save_json
 from agent.schema import SkillNotImplementedError
 from skills.common import add_common_output_arg, not_implemented_result, print_skill_result
 
@@ -350,7 +350,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     payload = load_json(args.input)
-    skill = RelevanceRankingSkill()
+    skill = RelevanceRankingSkill(load_config())
     try:
         result = skill.run(
             {

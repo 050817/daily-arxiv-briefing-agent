@@ -17,7 +17,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from agent.io_utils import ensure_dir, ensure_parent, load_json, save_json
+from agent.io_utils import ensure_dir, ensure_parent, load_config, load_json, save_json
 from agent.openai_compat import load_openai_compatible_settings, resolve_openai_compatible_config
 from agent.schema import SkillNotImplementedError
 from skills.common import add_common_output_arg, not_implemented_result, print_skill_result
@@ -1550,7 +1550,7 @@ def main() -> None:
     args = parse_args()
     payload = load_json(args.input)
     top_k_papers = payload.get("top_k_papers") or payload.get("ranked_papers", [])[: args.top_k]
-    skill = BriefingGraphSkill()
+    skill = BriefingGraphSkill(load_config())
     try:
         result = skill.run(
             {
