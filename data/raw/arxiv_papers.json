@@ -1,10 +1,190 @@
 {
-  "papers": [],
-  "query_keywords": [
-    "harness engineering",
-    "wire harness design",
-    "cable harness"
+  "papers": [
+    {
+      "title": "Agentic Fuzzing: Opportunities and Challenges",
+      "authors": [
+        "Junyoung Park",
+        "Insu Yun"
+      ],
+      "abstract": "Fuzzers and static analyzers find many bugs but struggle with logic bugs in mature codebases. Triggering such a bug often requires multi-step reasoning that produces no distinctive execution feedback, and variants can appear across implementations too different for a single pattern to match. Recent LLM-assisted approaches help, but they use LLMs as auxiliaries rather than as the reasoning engine. We propose agentic fuzzing, a bug-finding approach seeded by historical bugs in which deep agents perform the reasoning directly. Given a reference bug, the agent analyzes its root cause, hypothesizes new scenarios elsewhere in the codebase that may share that cause, and verifies each hypothesis by generating and running proof-of-concept code. This lets the agent find variants that differ completely in trigger path or code structure from the reference. We identify three practical challenges in implementing agentic fuzzing: harness engineering, redundant investigations across seeds with similar root causes, and scheduling seeds in a large corpus. We address these in AFuzz through a four-stage agent pipeline, scenario coverage that deduplicates previously explored scenarios, and a DPP-MAP scheduler that orders seeds by diversity. We ran AFuzz on the V8 JavaScript engine for about one month, finding 40 bugs (including three duplicates), receiving a total $35,000 bounty, and being assigned two CVEs. AFuzz also found 19 bugs (including one duplicate) in SpiderMonkey and JavaScriptCore using the seeds from V8. However, agentic fuzzing is in its early stages with several remaining open problems we discuss in the paper. Still, we think it points to a promising direction for finding logic bugs.",
+      "published_date": "2026-05-11",
+      "arxiv_id": "2605.10074v1",
+      "url": "https://arxiv.org/abs/2605.10074v1",
+      "categories": [
+        "cs.CR",
+        "cs.SE"
+      ]
+    },
+    {
+      "title": "Continual Harness: Online Adaptation for Self-Improving Foundation Agents",
+      "authors": [
+        "Seth Karten",
+        "Joel Zhang",
+        "Tersoo Upaa",
+        "Ruirong Feng",
+        "Wenzhe Li",
+        "Chengshuai Shi",
+        "Chi Jin",
+        "Kiran Vodrahalli"
+      ],
+      "abstract": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making. We first report our Gemini Plays Pokemon (GPP) experiments. With iterative human-in-the-loop harness refinement, GPP became the first AI system to complete Pokemon Blue, Yellow Legacy on hard mode, and Crystal without a lost battle. In the hardest stages, the agent itself began iterating on its strategy through long-context memory, surfacing emergent self-improvement signals alongside human-in-the-loop refinement. Continual Harness removes the human fully from this loop: a reset-free self-improving harness for embodied agents that formalizes and automates what we observed. Starting from only a minimal environment interface, the agent alternates between acting and refining its own prompt, sub-agents, skills, and memory, drawing on any past trajectory data. Prompt-optimization methods require episode resets; Continual Harness adapts online within a single run. On Pokemon Red and Emerald across frontier models, Continual Harness starting from scratch substantially reduces button-press cost relative to the minimalist baseline and recovers a majority of the gap to a hand-engineered expert harness, with capability-dependent gains, despite starting from the same raw interface with no curated knowledge, no hand-crafted tools, and no domain scaffolding. We then close the loop with the model itself: an online process-reward co-learning loop, in which an open-source agent's rollouts through the refining harness are relabeled by a frontier teacher and used to update the model, drives sustained in-game milestone progress on Pokemon Red without resetting the environment between training iterations.",
+      "published_date": "2026-05-11",
+      "arxiv_id": "2605.09998v1",
+      "url": "https://arxiv.org/abs/2605.09998v1",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ]
+    },
+    {
+      "title": "Towards Generalist Game Players: An Investigation of Foundation Models in the Game Multiverse",
+      "authors": [
+        "Kuan Zhang",
+        "Dongchen Liu",
+        "Qiyue Zhao",
+        "Tianyu Xin",
+        "Yue Su",
+        "Haisheng Wang",
+        "Han Yin",
+        "Hongbo Ma",
+        "Peize Li",
+        "Tianjun Gu",
+        "Xiangnan Wu",
+        "Xinran Zhang",
+        "Yongxuan Li",
+        "Zirong Chen",
+        "Yiming Li"
+      ],
+      "abstract": "The real world unfolds along a single set of physics laws, yet human intelligence demonstrates a remarkable capacity to generalize experiences from this singular physical existence into a multiverse of games, each governed by entirely different rules, aesthetics, physics, and objectives. This omni-reality adaptability is a hallmark of general intelligence. As Artificial Intelligence progresses towards Artificial General Intelligence, the multiverse of games has evolved from mere entertainment into the ultimate ground for training and evaluating AGI. The pursuit of this generality has unfolded across four eras: from environment-specific symbolic and reinforcement learning agents, to current large foundation models acting as generalist players, and toward a future creator stage where agent both creates new game worlds and continually evolves within them. We trace the full lifecycle of a generalist game player along four interdependent pillars: Dataset, Model, Harness, and Benchmark. Every advance across these pillars can be read as an attempt to break one of five fundamental trade-offs that currently bound the whole system. Building on this end-to-end view, we chart a five-level roadmap, progressing from single-game mastery to the ultimate creator stage in which the agent simultaneously creates and evolves within theoretical game multiverse. Taken together, our work offers a unified lens onto a rapidly shifting field,and a principled path toward the omnipotent generalist agent capable of seamlessly mastering any challenge within the multiverse of games, thereby paving the way for AGI.",
+      "published_date": "2026-05-11",
+      "arxiv_id": "2605.09965v1",
+      "url": "https://arxiv.org/abs/2605.09965v1",
+      "categories": [
+        "cs.CV"
+      ]
+    },
+    {
+      "title": "HAGE: Harnessing Agentic Memory via RL-Driven Weighted Graph Evolution",
+      "authors": [
+        "Dongming Jiang",
+        "Yi Li",
+        "Guanpeng Li",
+        "Qiannan Li",
+        "Bingzhe Li"
+      ],
+      "abstract": "Memory retrieval in agentic large language model (LLM) systems is often treated as a static lookup problem, relying on flat vector search or fixed binary relational graphs. However, fixed graph structures cannot capture the varying strength, confidence, and query-dependent relevance of relationships between events. In this paper, we propose HAGE, a weighted multi-relational memory framework that reconceptualizes retrieval as sequential, query-conditioned traversal over a unified relational memory graph. Memory is organized as relation-specific graph views over shared memory nodes, where each edge is associated with a trainable relation feature vector encoding multiple relational signals. Given a query, an LLM-based classifier identifies the relational intent, and a routing network dynamically modulates the corresponding dimensions of the edge embedding. Traversal scores are computed via a learned combination of semantic similarity and these query-conditioned edge representations. This allows memory traversal to prioritize high-utility relational paths while softly suppressing noisy or weakly relevant connections. Beyond adaptive traversal, HAGE further introduces a reinforcement learning-based training framework that jointly optimizes routing behavior and edge representations using downstream tasks. Finally, empirical results demonstrate improved long-horizon reasoning accuracy and a favorable accuracy-efficiency trade-off compared to state-of-the-art agentic memory systems. Our code is available at https://github.com/FredJiang0324/HAGE_MVPReview.",
+      "published_date": "2026-05-11",
+      "arxiv_id": "2605.09942v1",
+      "url": "https://arxiv.org/abs/2605.09942v1",
+      "categories": [
+        "cs.AI"
+      ]
+    },
+    {
+      "title": "Harnessing Floating Car Data, Traffic Camera Observations, and Network Flow Analysis for Traffic Volume Estimation",
+      "authors": [
+        "Antonina Kosikova",
+        "Mehmet Kerem Turkcan",
+        "Ahmed Darrat",
+        "Andrew Smyth"
+      ],
+      "abstract": "Cities increasingly rely on vehicle trajectory data to monitor traffic conditions; however, such data offer only a partial and spatially heterogeneous view of network dynamics and exhibit systematic biases across corridors and time periods. In contrast, surveillance cameras can provide high-fidelity traffic information, but only at a limited set of locations, typically sparsely distributed across the road network. We present a hybrid modeling and calibration framework that fuses these complementary data sources to produce physically consistent, network-wide estimates and short-horizon forecasts of traffic volumes. The framework leverages kinematic features derived from the Cell Transmission Model (CTM) formulation within a graph neural network (GNN). By enforcing traffic-flow conservation, capacity limits, and spillback dynamics, the CTM provides a physically grounded representation of traffic flow, while the GNN learns the spatiotemporal evolution of traffic states over the entire road network. To calibrate the model predictions on traffic camera observations, we use a progressive data-assimilation scheme based on an Ensemble Square-Root Kalman filter (EnSRF). A topology-informed flow-weighted transition matrix is further employed to propagate camera-driven corrections to unobserved road segments, enabling real-time, network-wide traffic state and volume estimation. The approach is demonstrated using probe-vehicle trajectory data and municipal traffic cameras in Manhattan, New York City, where it achieves improved accuracy relative to trajectory-based estimates while maintaining physically plausible and network-consistent traffic flows. The proposed framework accommodates varying sensor availability and produces calibrated traffic volumes with uncertainty estimates, supporting operational monitoring and evaluation of transportation policies in data-constrained urban environments.",
+      "published_date": "2026-05-11",
+      "arxiv_id": "2605.09891v1",
+      "url": "https://arxiv.org/abs/2605.09891v1",
+      "categories": [
+        "eess.SY"
+      ]
+    },
+    {
+      "title": "LEVI: Stronger Search Architectures Can Substitute for Larger LLMs in Evolutionary Search",
+      "authors": [
+        "Temoor Tanveer"
+      ],
+      "abstract": "LLM-guided evolutionary methods such as AlphaEvolve have proven effective in domains like math, systems research, and algorithmic discovery, but their reliance on frontier models makes each run expensive. We argue this is largely an artifact of how existing frameworks allocate search: archives that fail to preserve solution diversity force compensation through stronger mutation models; blind model use spends frontier dollars on local edits a smaller model could handle; and full-set evaluation wastes rollouts on redundant examples. We introduce LEVI, a harness-first evolutionary framework built on the bet that stronger search architectures can substitute for or even outperform larger LLMs in evolutionary search. LEVI improves on three core components of evolutionary search: a solution database that establishes diversity from the beginning, and then maintains it throughout the run; a smarter mutation router that plays into the strengths of large and small LLMs; and a rank-preserving proxy benchmark for rollout-heavy settings. Across systems-research benchmarks LEVI attains the highest score on a budget 3.3-6.7x smaller than the published frontier-model runs of existing frameworks like ShinkaEvolve, GEPA, and AdaEvolve; on one problem, LEVI matches the existing best at a 35x lower cost. On prompt optimization, LEVI matches or exceeds GEPA at less than half of its rollout budget on four different benchmarks. LEVI is available as an open-source framework at https://github.com/ttanv/levi.",
+      "published_date": "2026-05-10",
+      "arxiv_id": "2605.09764v1",
+      "url": "https://arxiv.org/abs/2605.09764v1",
+      "categories": [
+        "cs.NE",
+        "cs.AI"
+      ]
+    },
+    {
+      "title": "Metal-Sci: A Scientific Compute Benchmark for Evolutionary LLM Kernel Search on Apple Silicon",
+      "authors": [
+        "Víctor Gallego"
+      ],
+      "abstract": "We present Metal-Sci, a 10-task benchmark of scientific Apple Silicon Metal compute kernels spanning six optimization regimes (stencils, all-pairs in $n$-body problems, multi-field Boltzmann, neighbor-list molecular dynamics, multi-kernel PDE, FFT). Each task ships a CPU reference, a roofline-anchored fitness function, and a held-out generalization size. We pair the benchmark with a lightweight harness for automatic kernel search that runtime-compiles each candidate, scores it against the roofline across multiple sizes, and feeds structured compile and per-size correctness diagnostics back to a frozen LLM driving a $(1{+}1)$ evolutionary loop. We report matched single-model sweeps of Claude Opus 4.7, Gemini 3.1 Pro, and GPT 5.5 on M1 Pro: in-distribution self-speedups span $1.00\\times$ to $10.7\\times$. Beyond raw speedup, our central methodological claim is structural: the held-out gate scoring function $Φ_\\mathcal{T}$ (evaluated once at end-of-run on a configuration the agent never sees during search) functions as a cheap mechanical oversight primitive on this automatic search loop, catching e.g. an Opus template <uint D> HMC win that returns wrong samples at unseen dimensions, and a GPT FFT3D best that wins in-distribution at $2.95\\times$ speedup but collapses to $0.23\\times$ on a $256^3$ held-out cube, a silent regression that the in-distribution score alone cannot see. Code at https://github.com/vicgalle/metal-sci-kernels",
+      "published_date": "2026-05-10",
+      "arxiv_id": "2605.09708v1",
+      "url": "https://arxiv.org/abs/2605.09708v1",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.DC"
+      ]
+    },
+    {
+      "title": "Workspace Optimization: How to Train Your Agent",
+      "authors": [
+        "Elad Sarafian",
+        "Gal Kaplun",
+        "Ron Banner",
+        "Daniel Soudry",
+        "Boris Ginsburg"
+      ],
+      "abstract": "Modern agents built on frontier language models often cannot adapt their weights. What, then, remains trainable? We argue it is the agent's \\emph{workspace}, the structured external substrate it reads, writes, and tests; we call its evolution workspace optimization. Workspace optimization targets hard multi-turn environments where a frontier model has strong priors but cannot solve the task in a single shot, so the agent must learn through interaction. We propose a principled way to evolve the workspace, mirroring the structure of weight-space training: artifacts in place of parameters, evidence in place of data, counterexamples in place of losses, and textual feedback in place of gradients. We instantiate the idea in DreamTeam, a multi-agent harness for ARC-AGI-3 whose roles build an executable world model, plan, hypothesize, probe, strategize, and route failures. On the current 25-game ARC-AGI-3 public set under the official scoring protocol and averaged over two independent runs, DreamTeam improves the SOTA protocol-matched agent's score from 36% to 38.4%, while using 31% fewer environment actions per game.",
+      "published_date": "2026-05-10",
+      "arxiv_id": "2605.09650v1",
+      "url": "https://arxiv.org/abs/2605.09650v1",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ]
+    },
+    {
+      "title": "DAP: Doppler-aware Point Network for Heterogeneous mmWave Action Recognition",
+      "authors": [
+        "Jiaying Lin",
+        "Shiman Wu",
+        "Jinfu Liu",
+        "Can Wang",
+        "Mengyuan Liu"
+      ],
+      "abstract": "Millimeter-wave (mmWave) radar provides privacy-preserving sensing and is valuable for human action recognition (HAR). Existing mmWave point cloud datasets are limited in scale and mostly collected under homogeneous single-source settings, preventing current methods from handling real-world distribution shifts caused by heterogeneous radar sources, such as different devices and frequency bands. To address this, we introduce UniMM-HAR, the largest and first mmWave point cloud HAR dataset for heterogeneous multi-source scenarios, standardizing three distinct radar configurations to realistically evaluate cross-source generalization. We further propose the Doppler-aware Point Cloud Network (DAP-Net) to tackle heterogeneity challenges. DAP-Net enhances intra-modal representations and performs cross-modal alignment to learn source-invariant action semantics. Leveraging action-consistent spatio-temporal Doppler patterns as anchors, the Dual-space Doppler Reparameterization (D2R) module performs sample-adaptive geometric densification and Doppler-guided feature recalibration, while the Text Alignment Module (TAM) provides stable semantic anchors via a pretrained textual space. Experiments show that DAP-Net significantly outperforms existing methods under heterogeneous radar settings, achieving state-of-the-art accuracy and strong cross-source robustness.",
+      "published_date": "2026-05-10",
+      "arxiv_id": "2605.09604v1",
+      "url": "https://arxiv.org/abs/2605.09604v1",
+      "categories": [
+        "cs.CV"
+      ]
+    },
+    {
+      "title": "SkillMAS: Skill Co-Evolution with LLM-based Multi-Agent System",
+      "authors": [
+        "Shuai Pan",
+        "Yixiang Liu",
+        "Jiaye Gao",
+        "Te Gao",
+        "Weiwen Liu",
+        "Jianghao Lin",
+        "Zhihui Fu",
+        "Jun Wang",
+        "Weinan Zhang",
+        "Yong Yu"
+      ],
+      "abstract": "Large language model (LLM) agent systems are increasingly expected to improve after deployment, but existing work often decouples two adaptation targets: skill evolution and multi-agent system (MAS) restructuring. This separation can create organization bottlenecks, context pressure, and mis-specialization. We present SkillMAS, a non-parametric framework for adaptive specialization in multi-agent systems that couples skill evolution with MAS restructuring. SkillMAS uses Utility Learning to assign credit from verified execution traces, bounded skill evolution to refine reusable procedures without unfiltered library growth, and evidence-gated MAS restructuring when retained failures and Executor Utility indicate a structural mismatch. Across embodied manipulation, command-line execution, and retail workflows, SkillMAS is competitive under the reported harnesses while clarifying how post-deployment specialization is attributed, updated, and applied.",
+      "published_date": "2026-05-10",
+      "arxiv_id": "2605.09341v1",
+      "url": "https://arxiv.org/abs/2605.09341v1",
+      "categories": [
+        "cs.MA",
+        "cs.CL"
+      ]
+    }
   ],
-  "keyword_extraction_source": "openai",
-  "resolved_search_query": "((ti:\"harness engineering\" OR abs:\"harness engineering\") OR ((ti:harness OR abs:harness) AND (ti:engineering OR abs:engineering))) AND ((ti:\"wire harness design\" OR abs:\"wire harness design\") OR ((ti:wire OR abs:wire) AND (ti:harness OR abs:harness) AND (ti:design OR abs:design))) AND ((ti:\"cable harness\" OR abs:\"cable harness\") OR ((ti:cable OR abs:cable) AND (ti:harness OR abs:harness)))"
+  "query_keywords": [],
+  "keyword_extraction_source": "direct_query",
+  "resolved_search_query": "all:harness"
 }

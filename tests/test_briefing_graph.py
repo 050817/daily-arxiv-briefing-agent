@@ -52,6 +52,48 @@ class BriefingGraphSkillTest(unittest.TestCase):
         self.assertEqual(summary["limitation"], "Not mentioned in abstract")
         self.assertEqual(summary["evidence_source"], "title and abstract only")
 
+    def test_generate_structured_summary_can_use_ai_when_enabled(self):
+        class FakeAISkill(BriefingGraphSkill):
+            def _openai_api_key(self) -> str:
+                return "test-key"
+
+            def _call_openai_chat(self, messages, *, timeout_seconds=60):
+                return (
+                    '{"title":"AI Paper","one_sentence_summary":"AI summary.",'
+                    '"topic_relevance":"Relevant to the query.","problem":"Problem from abstract.",'
+                    '"method":"Method from abstract.","contribution":"Contribution from abstract.",'
+                    '"experiment_or_evidence":"Not mentioned in abstract",'
+                    '"limitation":"Not mentioned in abstract","evidence_source":"title and abstract only"}'
+                )
+
+        skill = FakeAISkill({"briefing": {"ai_summary_enabled": True}})
+
+        summary = skill.generate_structured_summary(SAMPLE_TOP_K_PAPERS[0], "graph neural networks")
+
+        self.assertEqual(summary["title"], "AI Paper")
+        self.assertEqual(summary["one_sentence_summary"], "AI summary.")
+        self.assertEqual(summary["evidence_source"], "AI summary grounded in title and abstract only")
+
+    def test_chat_with_archive_uses_skill_logic_and_persists_messages(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            archive_path = Path(tmpdir)
+            (archive_path / "metadata.json").write_text(
+                '{"query":"graph neural networks"}',
+                encoding="utf-8",
+            )
+            (archive_path / "report.md").write_text(
+                "# Report\nGraph neural networks are discussed.",
+                encoding="utf-8",
+            )
+            skill = BriefingGraphSkill()
+
+            result = skill.chat_with_archive(archive_path, "What is discussed?")
+
+            self.assertIn("Graph neural networks", result["answer"])
+            chat = (archive_path / "chat.json").read_text(encoding="utf-8")
+            self.assertIn("What is discussed?", chat)
+            self.assertIn("assistant", chat)
+
     def test_keyword_graph_analysis_finds_central_keywords(self):
         skill = BriefingGraphSkill()
 

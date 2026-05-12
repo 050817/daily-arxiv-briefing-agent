@@ -8,6 +8,8 @@ import math
 import re
 import shutil
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,7 +17,8 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from agent.io_utils import ensure_dir, ensure_parent, load_json
+from agent.io_utils import ensure_dir, ensure_parent, load_json, save_json
+from agent.openai_compat import load_openai_compatible_settings, resolve_openai_compatible_config
 from agent.schema import SkillNotImplementedError
 from skills.common import add_common_output_arg, not_implemented_result, print_skill_result
 
@@ -148,6 +151,7 @@ class BriefingGraphSkill:
     def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.paths = self.config.get("paths", {})
+        self.briefing_config = self.config.get("briefing", {})
 
     def run(self, input_data: dict[str, Any]) -> dict[str, Any]:
         query = str(input_data.get("query", "")).strip()
@@ -203,6 +207,14 @@ class BriefingGraphSkill:
         }
 
     def generate_structured_summary(self, paper: dict[str, Any], query: str = "") -> dict[str, Any]:
+        if self._ai_summary_enabled():
+            try:
+                return self._generate_ai_structured_summary(paper, query)
+            except Exception:
+                pass
+        return self._generate_rule_structured_summary(paper, query)
+
+    def _generate_rule_structured_summary(self, paper: dict[str, Any], query: str = "") -> dict[str, Any]:
         title = self._clean_text(str(paper.get("title", "")))
         abstract = self._clean_text(str(paper.get("abstract", "")))
         sentences = self._split_sentences(abstract)
@@ -220,6 +232,188 @@ class BriefingGraphSkill:
             "limitation": self._find_best_limitation_sentence(sentences) or "Not mentioned in abstract",
             "evidence_source": "title and abstract only",
         }
+
+    def chat_with_archive(self, archive_path: str | Path, message: str) -> dict[str, Any]:
+        archive = Path(archive_path)
+        if not archive.exists() or not archive.is_dir():
+            raise FileNotFoundError("archive not found")
+        clean_message = str(message or "").strip()
+        if not clean_message:
+            raise ValueError("message is required")
+
+        context = self.load_archive_context(archive)
+        answer = self.answer_archive_question(clean_message, context)
+        chat_path = archive / "chat.json"
+        chat = load_json(chat_path) if chat_path.exists() else {"messages": []}
+        chat["messages"].extend(
+            [
+                {"role": "user", "content": clean_message},
+                {"role": "assistant", "content": answer},
+            ]
+        )
+        save_json(chat, chat_path)
+        return {"answer": answer, "messages": chat["messages"]}
+
+    def load_archive_context(self, archive_path: str | Path) -> str:
+        archive = Path(archive_path)
+        chunks = []
+        for name in ["metadata.json", "report.md", "ranked_papers.json", "raw_papers.json"]:
+            path = archive / name
+            if path.exists():
+                text = path.read_text(encoding="utf-8", errors="replace")
+                chunks.append(f"[{name}]\n{text[:12000]}")
+        return "\n\n".join(chunks)
+
+    def answer_archive_question(self, message: str, context: str) -> str:
+        if self._openai_api_key():
+            try:
+                return self._call_openai_chat(
+                    [
+                        {
+                            "role": "system",
+                            "content": (
+                                "You answer questions about an archived arXiv briefing. "
+                                "Use only the provided report/archive context. If the answer is not in the files, say so."
+                            ),
+                        },
+                        {"role": "user", "content": f"Archive context:\n{context[:30000]}\n\nQuestion: {message}"},
+                    ],
+                    timeout_seconds=float(self.briefing_config.get("chat_timeout_seconds", 60)),
+                )
+            except Exception as exc:
+                return (
+                    "模型接口调用失败，下面给出基于归档文件的本地回答。\n\n"
+                    f"接口错误: {exc}\n\n{self._fallback_archive_answer(message, context)}"
+                )
+        return self._fallback_archive_answer(message, context)
+
+    def _generate_ai_structured_summary(self, paper: dict[str, Any], query: str = "") -> dict[str, Any]:
+        title = self._clean_text(str(paper.get("title", ""))) or "Untitled paper"
+        abstract = self._clean_text(str(paper.get("abstract", "")))
+        if not abstract:
+            raise RuntimeError("AI summary requires an abstract.")
+
+        prompt = (
+            "Create an evidence-grounded structured summary for one arXiv paper. "
+            "Use only the title, abstract, ranking reason, and query below. "
+            "Do not infer methods, experiments, limitations, or claims that are not stated. "
+            "If a field is not supported by the abstract, write exactly 'Not mentioned in abstract'. "
+            "Return JSON only with these string keys: title, one_sentence_summary, topic_relevance, "
+            "problem, method, contribution, experiment_or_evidence, limitation, evidence_source.\n\n"
+            f"Query: {query or 'Not provided'}\n"
+            f"Title: {title}\n"
+            f"Ranking reason: {paper.get('ranking_reason', '')}\n"
+            f"Abstract: {abstract[:6000]}"
+        )
+        content = self._call_openai_chat(
+            [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a careful research briefing assistant. "
+                        "You must return valid JSON and stay grounded in the provided abstract."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            timeout_seconds=float(self.briefing_config.get("ai_summary_timeout_seconds", 60)),
+        )
+        payload = self._parse_json_object(content)
+        summary = self._normalize_ai_summary(payload, title)
+        summary["evidence_source"] = "AI summary grounded in title and abstract only"
+        return summary
+
+    def _call_openai_chat(self, messages: list[dict[str, str]], *, timeout_seconds: float = 60) -> str:
+        config = self._openai_config()
+        api_key = config.get("api_key", "")
+        if not api_key:
+            raise RuntimeError("No OpenAI-compatible API key is configured.")
+        base_url = config["api_url"].rstrip("/")
+        request_body = {
+            "model": config["model"],
+            "messages": messages,
+        }
+        request = urllib.request.Request(
+            f"{base_url}/chat/completions",
+            data=json.dumps(request_body).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+                body = response.read().decode("utf-8")
+        except urllib.error.HTTPError as exc:
+            detail = exc.read(500).decode("utf-8", errors="replace")
+            raise RuntimeError(f"HTTP {exc.code}: {detail}") from exc
+        data = json.loads(body)
+        return str(data["choices"][0]["message"]["content"])
+
+    def _parse_json_object(self, content: str) -> dict[str, Any]:
+        text = content.strip()
+        if text.startswith("```"):
+            text = re.sub(r"^```(?:json)?\s*", "", text, flags=re.IGNORECASE)
+            text = re.sub(r"\s*```$", "", text)
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            match = re.search(r"\{.*\}", text, flags=re.DOTALL)
+            if not match:
+                raise
+            payload = json.loads(match.group(0))
+        if not isinstance(payload, dict):
+            raise ValueError("AI summary response must be a JSON object.")
+        return payload
+
+    def _normalize_ai_summary(self, payload: dict[str, Any], fallback_title: str) -> dict[str, str]:
+        keys = [
+            "title",
+            "one_sentence_summary",
+            "topic_relevance",
+            "problem",
+            "method",
+            "contribution",
+            "experiment_or_evidence",
+            "limitation",
+            "evidence_source",
+        ]
+        summary = {key: self._clean_text(str(payload.get(key, ""))) for key in keys}
+        summary["title"] = summary["title"] or fallback_title or "Untitled paper"
+        for key in keys:
+            if key == "title":
+                continue
+            if not summary[key]:
+                summary[key] = "Not mentioned in abstract"
+        return summary
+
+    def _fallback_archive_answer(self, message: str, context: str) -> str:
+        terms = [term.lower() for term in message.split() if len(term) > 2]
+        lines = [line.strip() for line in context.splitlines() if line.strip()]
+        matches = [
+            line for line in lines if any(term in line.lower() for term in terms)
+        ][:8]
+        if not matches:
+            matches = lines[:8]
+        evidence = "\n".join(f"- {line[:420]}" for line in matches)
+        return (
+            "当前使用本地归档文件检索式回答。\n\n"
+            f"相关文件片段:\n{evidence}\n\n"
+            "如果需要真正的模型对话，请在网页的模型 API 设置中保存可用的 API URL、Model 和 API Key。"
+        )
+
+    def _ai_summary_enabled(self) -> bool:
+        return bool(self.briefing_config.get("ai_summary_enabled", False)) and bool(self._openai_api_key())
+
+    def _openai_api_key(self) -> str:
+        return self._openai_config().get("api_key", "")
+
+    def _openai_config(self) -> dict[str, str]:
+        settings = load_openai_compatible_settings()
+        return resolve_openai_compatible_config(
+            configured_base_url=str(settings.get("api_url", "")).strip(),
+            configured_model=str(settings.get("model", "")).strip(),
+            configured_api_key=str(settings.get("api_key", "")).strip(),
+            default_model=str(self.briefing_config.get("llm_model", "gpt-5.4")),
+        )
 
     def extract_keywords(self, papers: list[dict[str, Any]]) -> dict[str, list[str]]:
         document_frequencies = self._document_frequencies(papers)

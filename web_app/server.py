@@ -122,18 +122,7 @@ class BriefingWebApp:
             raise ValueError("message is required")
 
         archive_path = self._safe_archive_path(archive_id)
-        context = self._load_archive_context(archive_path)
-        answer = self._call_model_or_fallback(message, context)
-        chat_path = archive_path / "chat.json"
-        chat = load_json(chat_path) if chat_path.exists() else {"messages": []}
-        chat["messages"].extend(
-            [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": answer},
-            ]
-        )
-        save_json(chat, chat_path)
-        return {"answer": answer, "messages": chat["messages"]}
+        return self.briefing_skill.chat_with_archive(archive_path, message)
 
     def _archive_latest_run(self, query: str, result: dict[str, Any], user_input: dict[str, Any]) -> dict[str, Any]:
         briefing = result.get("outputs", {}).get("briefing", {})

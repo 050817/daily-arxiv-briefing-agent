@@ -1,0 +1,584 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "retrieval",
+    "ranking",
+    "briefing"
+  ],
+  "outputs": {
+    "retrieval": {
+      "papers": [
+        {
+          "title": "Agentic Fuzzing: Opportunities and Challenges",
+          "authors": [
+            "Junyoung Park",
+            "Insu Yun"
+          ],
+          "abstract": "Fuzzers and static analyzers find many bugs but struggle with logic bugs in mature codebases. Triggering such a bug often requires multi-step reasoning that produces no distinctive execution feedback, and variants can appear across implementations too different for a single pattern to match. Recent LLM-assisted approaches help, but they use LLMs as auxiliaries rather than as the reasoning engine. We propose agentic fuzzing, a bug-finding approach seeded by historical bugs in which deep agents perform the reasoning directly. Given a reference bug, the agent analyzes its root cause, hypothesizes new scenarios elsewhere in the codebase that may share that cause, and verifies each hypothesis by generating and running proof-of-concept code. This lets the agent find variants that differ completely in trigger path or code structure from the reference. We identify three practical challenges in implementing agentic fuzzing: harness engineering, redundant investigations across seeds with similar root causes, and scheduling seeds in a large corpus. We address these in AFuzz through a four-stage agent pipeline, scenario coverage that deduplicates previously explored scenarios, and a DPP-MAP scheduler that orders seeds by diversity. We ran AFuzz on the V8 JavaScript engine for about one month, finding 40 bugs (including three duplicates), receiving a total $35,000 bounty, and being assigned two CVEs. AFuzz also found 19 bugs (including one duplicate) in SpiderMonkey and JavaScriptCore using the seeds from V8. However, agentic fuzzing is in its early stages with several remaining open problems we discuss in the paper. Still, we think it points to a promising direction for finding logic bugs.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.10074v1",
+          "url": "https://arxiv.org/abs/2605.10074v1",
+          "categories": [
+            "cs.CR",
+            "cs.SE"
+          ]
+        },
+        {
+          "title": "Continual Harness: Online Adaptation for Self-Improving Foundation Agents",
+          "authors": [
+            "Seth Karten",
+            "Joel Zhang",
+            "Tersoo Upaa",
+            "Ruirong Feng",
+            "Wenzhe Li",
+            "Chengshuai Shi",
+            "Chi Jin",
+            "Kiran Vodrahalli"
+          ],
+          "abstract": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making. We first report our Gemini Plays Pokemon (GPP) experiments. With iterative human-in-the-loop harness refinement, GPP became the first AI system to complete Pokemon Blue, Yellow Legacy on hard mode, and Crystal without a lost battle. In the hardest stages, the agent itself began iterating on its strategy through long-context memory, surfacing emergent self-improvement signals alongside human-in-the-loop refinement. Continual Harness removes the human fully from this loop: a reset-free self-improving harness for embodied agents that formalizes and automates what we observed. Starting from only a minimal environment interface, the agent alternates between acting and refining its own prompt, sub-agents, skills, and memory, drawing on any past trajectory data. Prompt-optimization methods require episode resets; Continual Harness adapts online within a single run. On Pokemon Red and Emerald across frontier models, Continual Harness starting from scratch substantially reduces button-press cost relative to the minimalist baseline and recovers a majority of the gap to a hand-engineered expert harness, with capability-dependent gains, despite starting from the same raw interface with no curated knowledge, no hand-crafted tools, and no domain scaffolding. We then close the loop with the model itself: an online process-reward co-learning loop, in which an open-source agent's rollouts through the refining harness are relabeled by a frontier teacher and used to update the model, drives sustained in-game milestone progress on Pokemon Red without resetting the environment between training iterations.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09998v1",
+          "url": "https://arxiv.org/abs/2605.09998v1",
+          "categories": [
+            "cs.LG",
+            "cs.AI"
+          ]
+        },
+        {
+          "title": "Towards Generalist Game Players: An Investigation of Foundation Models in the Game Multiverse",
+          "authors": [
+            "Kuan Zhang",
+            "Dongchen Liu",
+            "Qiyue Zhao",
+            "Tianyu Xin",
+            "Yue Su",
+            "Haisheng Wang",
+            "Han Yin",
+            "Hongbo Ma",
+            "Peize Li",
+            "Tianjun Gu",
+            "Xiangnan Wu",
+            "Xinran Zhang",
+            "Yongxuan Li",
+            "Zirong Chen",
+            "Yiming Li"
+          ],
+          "abstract": "The real world unfolds along a single set of physics laws, yet human intelligence demonstrates a remarkable capacity to generalize experiences from this singular physical existence into a multiverse of games, each governed by entirely different rules, aesthetics, physics, and objectives. This omni-reality adaptability is a hallmark of general intelligence. As Artificial Intelligence progresses towards Artificial General Intelligence, the multiverse of games has evolved from mere entertainment into the ultimate ground for training and evaluating AGI. The pursuit of this generality has unfolded across four eras: from environment-specific symbolic and reinforcement learning agents, to current large foundation models acting as generalist players, and toward a future creator stage where agent both creates new game worlds and continually evolves within them. We trace the full lifecycle of a generalist game player along four interdependent pillars: Dataset, Model, Harness, and Benchmark. Every advance across these pillars can be read as an attempt to break one of five fundamental trade-offs that currently bound the whole system. Building on this end-to-end view, we chart a five-level roadmap, progressing from single-game mastery to the ultimate creator stage in which the agent simultaneously creates and evolves within theoretical game multiverse. Taken together, our work offers a unified lens onto a rapidly shifting field,and a principled path toward the omnipotent generalist agent capable of seamlessly mastering any challenge within the multiverse of games, thereby paving the way for AGI.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09965v1",
+          "url": "https://arxiv.org/abs/2605.09965v1",
+          "categories": [
+            "cs.CV"
+          ]
+        },
+        {
+          "title": "HAGE: Harnessing Agentic Memory via RL-Driven Weighted Graph Evolution",
+          "authors": [
+            "Dongming Jiang",
+            "Yi Li",
+            "Guanpeng Li",
+            "Qiannan Li",
+            "Bingzhe Li"
+          ],
+          "abstract": "Memory retrieval in agentic large language model (LLM) systems is often treated as a static lookup problem, relying on flat vector search or fixed binary relational graphs. However, fixed graph structures cannot capture the varying strength, confidence, and query-dependent relevance of relationships between events. In this paper, we propose HAGE, a weighted multi-relational memory framework that reconceptualizes retrieval as sequential, query-conditioned traversal over a unified relational memory graph. Memory is organized as relation-specific graph views over shared memory nodes, where each edge is associated with a trainable relation feature vector encoding multiple relational signals. Given a query, an LLM-based classifier identifies the relational intent, and a routing network dynamically modulates the corresponding dimensions of the edge embedding. Traversal scores are computed via a learned combination of semantic similarity and these query-conditioned edge representations. This allows memory traversal to prioritize high-utility relational paths while softly suppressing noisy or weakly relevant connections. Beyond adaptive traversal, HAGE further introduces a reinforcement learning-based training framework that jointly optimizes routing behavior and edge representations using downstream tasks. Finally, empirical results demonstrate improved long-horizon reasoning accuracy and a favorable accuracy-efficiency trade-off compared to state-of-the-art agentic memory systems. Our code is available at https://github.com/FredJiang0324/HAGE_MVPReview.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09942v1",
+          "url": "https://arxiv.org/abs/2605.09942v1",
+          "categories": [
+            "cs.AI"
+          ]
+        },
+        {
+          "title": "Harnessing Floating Car Data, Traffic Camera Observations, and Network Flow Analysis for Traffic Volume Estimation",
+          "authors": [
+            "Antonina Kosikova",
+            "Mehmet Kerem Turkcan",
+            "Ahmed Darrat",
+            "Andrew Smyth"
+          ],
+          "abstract": "Cities increasingly rely on vehicle trajectory data to monitor traffic conditions; however, such data offer only a partial and spatially heterogeneous view of network dynamics and exhibit systematic biases across corridors and time periods. In contrast, surveillance cameras can provide high-fidelity traffic information, but only at a limited set of locations, typically sparsely distributed across the road network. We present a hybrid modeling and calibration framework that fuses these complementary data sources to produce physically consistent, network-wide estimates and short-horizon forecasts of traffic volumes. The framework leverages kinematic features derived from the Cell Transmission Model (CTM) formulation within a graph neural network (GNN). By enforcing traffic-flow conservation, capacity limits, and spillback dynamics, the CTM provides a physically grounded representation of traffic flow, while the GNN learns the spatiotemporal evolution of traffic states over the entire road network. To calibrate the model predictions on traffic camera observations, we use a progressive data-assimilation scheme based on an Ensemble Square-Root Kalman filter (EnSRF). A topology-informed flow-weighted transition matrix is further employed to propagate camera-driven corrections to unobserved road segments, enabling real-time, network-wide traffic state and volume estimation. The approach is demonstrated using probe-vehicle trajectory data and municipal traffic cameras in Manhattan, New York City, where it achieves improved accuracy relative to trajectory-based estimates while maintaining physically plausible and network-consistent traffic flows. The proposed framework accommodates varying sensor availability and produces calibrated traffic volumes with uncertainty estimates, supporting operational monitoring and evaluation of transportation policies in data-constrained urban environments.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09891v1",
+          "url": "https://arxiv.org/abs/2605.09891v1",
+          "categories": [
+            "eess.SY"
+          ]
+        }
+      ],
+      "query_keywords": [],
+      "keyword_extraction_source": "direct_query",
+      "resolved_search_query": "all:harness"
+    },
+    "ranking": {
+      "ranked_papers": [
+        {
+          "title": "Continual Harness: Online Adaptation for Self-Improving Foundation Agents",
+          "authors": [
+            "Seth Karten",
+            "Joel Zhang",
+            "Tersoo Upaa",
+            "Ruirong Feng",
+            "Wenzhe Li",
+            "Chengshuai Shi",
+            "Chi Jin",
+            "Kiran Vodrahalli"
+          ],
+          "abstract": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making. We first report our Gemini Plays Pokemon (GPP) experiments. With iterative human-in-the-loop harness refinement, GPP became the first AI system to complete Pokemon Blue, Yellow Legacy on hard mode, and Crystal without a lost battle. In the hardest stages, the agent itself began iterating on its strategy through long-context memory, surfacing emergent self-improvement signals alongside human-in-the-loop refinement. Continual Harness removes the human fully from this loop: a reset-free self-improving harness for embodied agents that formalizes and automates what we observed. Starting from only a minimal environment interface, the agent alternates between acting and refining its own prompt, sub-agents, skills, and memory, drawing on any past trajectory data. Prompt-optimization methods require episode resets; Continual Harness adapts online within a single run. On Pokemon Red and Emerald across frontier models, Continual Harness starting from scratch substantially reduces button-press cost relative to the minimalist baseline and recovers a majority of the gap to a hand-engineered expert harness, with capability-dependent gains, despite starting from the same raw interface with no curated knowledge, no hand-crafted tools, and no domain scaffolding. We then close the loop with the model itself: an online process-reward co-learning loop, in which an open-source agent's rollouts through the refining harness are relabeled by a frontier teacher and used to update the model, drives sustained in-game milestone progress on Pokemon Red without resetting the environment between training iterations.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09998v1",
+          "url": "https://arxiv.org/abs/2605.09998v1",
+          "categories": [
+            "cs.LG",
+            "cs.AI"
+          ],
+          "relevance_score": 0.1477,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the title: harness."
+        },
+        {
+          "title": "Towards Generalist Game Players: An Investigation of Foundation Models in the Game Multiverse",
+          "authors": [
+            "Kuan Zhang",
+            "Dongchen Liu",
+            "Qiyue Zhao",
+            "Tianyu Xin",
+            "Yue Su",
+            "Haisheng Wang",
+            "Han Yin",
+            "Hongbo Ma",
+            "Peize Li",
+            "Tianjun Gu",
+            "Xiangnan Wu",
+            "Xinran Zhang",
+            "Yongxuan Li",
+            "Zirong Chen",
+            "Yiming Li"
+          ],
+          "abstract": "The real world unfolds along a single set of physics laws, yet human intelligence demonstrates a remarkable capacity to generalize experiences from this singular physical existence into a multiverse of games, each governed by entirely different rules, aesthetics, physics, and objectives. This omni-reality adaptability is a hallmark of general intelligence. As Artificial Intelligence progresses towards Artificial General Intelligence, the multiverse of games has evolved from mere entertainment into the ultimate ground for training and evaluating AGI. The pursuit of this generality has unfolded across four eras: from environment-specific symbolic and reinforcement learning agents, to current large foundation models acting as generalist players, and toward a future creator stage where agent both creates new game worlds and continually evolves within them. We trace the full lifecycle of a generalist game player along four interdependent pillars: Dataset, Model, Harness, and Benchmark. Every advance across these pillars can be read as an attempt to break one of five fundamental trade-offs that currently bound the whole system. Building on this end-to-end view, we chart a five-level roadmap, progressing from single-game mastery to the ultimate creator stage in which the agent simultaneously creates and evolves within theoretical game multiverse. Taken together, our work offers a unified lens onto a rapidly shifting field,and a principled path toward the omnipotent generalist agent capable of seamlessly mastering any challenge within the multiverse of games, thereby paving the way for AGI.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09965v1",
+          "url": "https://arxiv.org/abs/2605.09965v1",
+          "categories": [
+            "cs.CV"
+          ],
+          "relevance_score": 0.018,
+          "rank": 2,
+          "ranking_reason": "Matches query terms in the abstract: harness."
+        },
+        {
+          "title": "Agentic Fuzzing: Opportunities and Challenges",
+          "authors": [
+            "Junyoung Park",
+            "Insu Yun"
+          ],
+          "abstract": "Fuzzers and static analyzers find many bugs but struggle with logic bugs in mature codebases. Triggering such a bug often requires multi-step reasoning that produces no distinctive execution feedback, and variants can appear across implementations too different for a single pattern to match. Recent LLM-assisted approaches help, but they use LLMs as auxiliaries rather than as the reasoning engine. We propose agentic fuzzing, a bug-finding approach seeded by historical bugs in which deep agents perform the reasoning directly. Given a reference bug, the agent analyzes its root cause, hypothesizes new scenarios elsewhere in the codebase that may share that cause, and verifies each hypothesis by generating and running proof-of-concept code. This lets the agent find variants that differ completely in trigger path or code structure from the reference. We identify three practical challenges in implementing agentic fuzzing: harness engineering, redundant investigations across seeds with similar root causes, and scheduling seeds in a large corpus. We address these in AFuzz through a four-stage agent pipeline, scenario coverage that deduplicates previously explored scenarios, and a DPP-MAP scheduler that orders seeds by diversity. We ran AFuzz on the V8 JavaScript engine for about one month, finding 40 bugs (including three duplicates), receiving a total $35,000 bounty, and being assigned two CVEs. AFuzz also found 19 bugs (including one duplicate) in SpiderMonkey and JavaScriptCore using the seeds from V8. However, agentic fuzzing is in its early stages with several remaining open problems we discuss in the paper. Still, we think it points to a promising direction for finding logic bugs.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.10074v1",
+          "url": "https://arxiv.org/abs/2605.10074v1",
+          "categories": [
+            "cs.CR",
+            "cs.SE"
+          ],
+          "relevance_score": 0.0171,
+          "rank": 3,
+          "ranking_reason": "Matches query terms in the abstract: harness."
+        },
+        {
+          "title": "HAGE: Harnessing Agentic Memory via RL-Driven Weighted Graph Evolution",
+          "authors": [
+            "Dongming Jiang",
+            "Yi Li",
+            "Guanpeng Li",
+            "Qiannan Li",
+            "Bingzhe Li"
+          ],
+          "abstract": "Memory retrieval in agentic large language model (LLM) systems is often treated as a static lookup problem, relying on flat vector search or fixed binary relational graphs. However, fixed graph structures cannot capture the varying strength, confidence, and query-dependent relevance of relationships between events. In this paper, we propose HAGE, a weighted multi-relational memory framework that reconceptualizes retrieval as sequential, query-conditioned traversal over a unified relational memory graph. Memory is organized as relation-specific graph views over shared memory nodes, where each edge is associated with a trainable relation feature vector encoding multiple relational signals. Given a query, an LLM-based classifier identifies the relational intent, and a routing network dynamically modulates the corresponding dimensions of the edge embedding. Traversal scores are computed via a learned combination of semantic similarity and these query-conditioned edge representations. This allows memory traversal to prioritize high-utility relational paths while softly suppressing noisy or weakly relevant connections. Beyond adaptive traversal, HAGE further introduces a reinforcement learning-based training framework that jointly optimizes routing behavior and edge representations using downstream tasks. Finally, empirical results demonstrate improved long-horizon reasoning accuracy and a favorable accuracy-efficiency trade-off compared to state-of-the-art agentic memory systems. Our code is available at https://github.com/FredJiang0324/HAGE_MVPReview.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09942v1",
+          "url": "https://arxiv.org/abs/2605.09942v1",
+          "categories": [
+            "cs.AI"
+          ],
+          "relevance_score": 0.0,
+          "rank": 4,
+          "ranking_reason": "No direct query-term overlap; ranked after more relevant papers."
+        },
+        {
+          "title": "Harnessing Floating Car Data, Traffic Camera Observations, and Network Flow Analysis for Traffic Volume Estimation",
+          "authors": [
+            "Antonina Kosikova",
+            "Mehmet Kerem Turkcan",
+            "Ahmed Darrat",
+            "Andrew Smyth"
+          ],
+          "abstract": "Cities increasingly rely on vehicle trajectory data to monitor traffic conditions; however, such data offer only a partial and spatially heterogeneous view of network dynamics and exhibit systematic biases across corridors and time periods. In contrast, surveillance cameras can provide high-fidelity traffic information, but only at a limited set of locations, typically sparsely distributed across the road network. We present a hybrid modeling and calibration framework that fuses these complementary data sources to produce physically consistent, network-wide estimates and short-horizon forecasts of traffic volumes. The framework leverages kinematic features derived from the Cell Transmission Model (CTM) formulation within a graph neural network (GNN). By enforcing traffic-flow conservation, capacity limits, and spillback dynamics, the CTM provides a physically grounded representation of traffic flow, while the GNN learns the spatiotemporal evolution of traffic states over the entire road network. To calibrate the model predictions on traffic camera observations, we use a progressive data-assimilation scheme based on an Ensemble Square-Root Kalman filter (EnSRF). A topology-informed flow-weighted transition matrix is further employed to propagate camera-driven corrections to unobserved road segments, enabling real-time, network-wide traffic state and volume estimation. The approach is demonstrated using probe-vehicle trajectory data and municipal traffic cameras in Manhattan, New York City, where it achieves improved accuracy relative to trajectory-based estimates while maintaining physically plausible and network-consistent traffic flows. The proposed framework accommodates varying sensor availability and produces calibrated traffic volumes with uncertainty estimates, supporting operational monitoring and evaluation of transportation policies in data-constrained urban environments.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09891v1",
+          "url": "https://arxiv.org/abs/2605.09891v1",
+          "categories": [
+            "eess.SY"
+          ],
+          "relevance_score": 0.0,
+          "rank": 5,
+          "ranking_reason": "No direct query-term overlap; ranked after more relevant papers."
+        }
+      ],
+      "top_k_papers": [
+        {
+          "title": "Continual Harness: Online Adaptation for Self-Improving Foundation Agents",
+          "authors": [
+            "Seth Karten",
+            "Joel Zhang",
+            "Tersoo Upaa",
+            "Ruirong Feng",
+            "Wenzhe Li",
+            "Chengshuai Shi",
+            "Chi Jin",
+            "Kiran Vodrahalli"
+          ],
+          "abstract": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making. We first report our Gemini Plays Pokemon (GPP) experiments. With iterative human-in-the-loop harness refinement, GPP became the first AI system to complete Pokemon Blue, Yellow Legacy on hard mode, and Crystal without a lost battle. In the hardest stages, the agent itself began iterating on its strategy through long-context memory, surfacing emergent self-improvement signals alongside human-in-the-loop refinement. Continual Harness removes the human fully from this loop: a reset-free self-improving harness for embodied agents that formalizes and automates what we observed. Starting from only a minimal environment interface, the agent alternates between acting and refining its own prompt, sub-agents, skills, and memory, drawing on any past trajectory data. Prompt-optimization methods require episode resets; Continual Harness adapts online within a single run. On Pokemon Red and Emerald across frontier models, Continual Harness starting from scratch substantially reduces button-press cost relative to the minimalist baseline and recovers a majority of the gap to a hand-engineered expert harness, with capability-dependent gains, despite starting from the same raw interface with no curated knowledge, no hand-crafted tools, and no domain scaffolding. We then close the loop with the model itself: an online process-reward co-learning loop, in which an open-source agent's rollouts through the refining harness are relabeled by a frontier teacher and used to update the model, drives sustained in-game milestone progress on Pokemon Red without resetting the environment between training iterations.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09998v1",
+          "url": "https://arxiv.org/abs/2605.09998v1",
+          "categories": [
+            "cs.LG",
+            "cs.AI"
+          ],
+          "relevance_score": 0.1477,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the title: harness."
+        },
+        {
+          "title": "Towards Generalist Game Players: An Investigation of Foundation Models in the Game Multiverse",
+          "authors": [
+            "Kuan Zhang",
+            "Dongchen Liu",
+            "Qiyue Zhao",
+            "Tianyu Xin",
+            "Yue Su",
+            "Haisheng Wang",
+            "Han Yin",
+            "Hongbo Ma",
+            "Peize Li",
+            "Tianjun Gu",
+            "Xiangnan Wu",
+            "Xinran Zhang",
+            "Yongxuan Li",
+            "Zirong Chen",
+            "Yiming Li"
+          ],
+          "abstract": "The real world unfolds along a single set of physics laws, yet human intelligence demonstrates a remarkable capacity to generalize experiences from this singular physical existence into a multiverse of games, each governed by entirely different rules, aesthetics, physics, and objectives. This omni-reality adaptability is a hallmark of general intelligence. As Artificial Intelligence progresses towards Artificial General Intelligence, the multiverse of games has evolved from mere entertainment into the ultimate ground for training and evaluating AGI. The pursuit of this generality has unfolded across four eras: from environment-specific symbolic and reinforcement learning agents, to current large foundation models acting as generalist players, and toward a future creator stage where agent both creates new game worlds and continually evolves within them. We trace the full lifecycle of a generalist game player along four interdependent pillars: Dataset, Model, Harness, and Benchmark. Every advance across these pillars can be read as an attempt to break one of five fundamental trade-offs that currently bound the whole system. Building on this end-to-end view, we chart a five-level roadmap, progressing from single-game mastery to the ultimate creator stage in which the agent simultaneously creates and evolves within theoretical game multiverse. Taken together, our work offers a unified lens onto a rapidly shifting field,and a principled path toward the omnipotent generalist agent capable of seamlessly mastering any challenge within the multiverse of games, thereby paving the way for AGI.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09965v1",
+          "url": "https://arxiv.org/abs/2605.09965v1",
+          "categories": [
+            "cs.CV"
+          ],
+          "relevance_score": 0.018,
+          "rank": 2,
+          "ranking_reason": "Matches query terms in the abstract: harness."
+        },
+        {
+          "title": "Agentic Fuzzing: Opportunities and Challenges",
+          "authors": [
+            "Junyoung Park",
+            "Insu Yun"
+          ],
+          "abstract": "Fuzzers and static analyzers find many bugs but struggle with logic bugs in mature codebases. Triggering such a bug often requires multi-step reasoning that produces no distinctive execution feedback, and variants can appear across implementations too different for a single pattern to match. Recent LLM-assisted approaches help, but they use LLMs as auxiliaries rather than as the reasoning engine. We propose agentic fuzzing, a bug-finding approach seeded by historical bugs in which deep agents perform the reasoning directly. Given a reference bug, the agent analyzes its root cause, hypothesizes new scenarios elsewhere in the codebase that may share that cause, and verifies each hypothesis by generating and running proof-of-concept code. This lets the agent find variants that differ completely in trigger path or code structure from the reference. We identify three practical challenges in implementing agentic fuzzing: harness engineering, redundant investigations across seeds with similar root causes, and scheduling seeds in a large corpus. We address these in AFuzz through a four-stage agent pipeline, scenario coverage that deduplicates previously explored scenarios, and a DPP-MAP scheduler that orders seeds by diversity. We ran AFuzz on the V8 JavaScript engine for about one month, finding 40 bugs (including three duplicates), receiving a total $35,000 bounty, and being assigned two CVEs. AFuzz also found 19 bugs (including one duplicate) in SpiderMonkey and JavaScriptCore using the seeds from V8. However, agentic fuzzing is in its early stages with several remaining open problems we discuss in the paper. Still, we think it points to a promising direction for finding logic bugs.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.10074v1",
+          "url": "https://arxiv.org/abs/2605.10074v1",
+          "categories": [
+            "cs.CR",
+            "cs.SE"
+          ],
+          "relevance_score": 0.0171,
+          "rank": 3,
+          "ranking_reason": "Matches query terms in the abstract: harness."
+        },
+        {
+          "title": "HAGE: Harnessing Agentic Memory via RL-Driven Weighted Graph Evolution",
+          "authors": [
+            "Dongming Jiang",
+            "Yi Li",
+            "Guanpeng Li",
+            "Qiannan Li",
+            "Bingzhe Li"
+          ],
+          "abstract": "Memory retrieval in agentic large language model (LLM) systems is often treated as a static lookup problem, relying on flat vector search or fixed binary relational graphs. However, fixed graph structures cannot capture the varying strength, confidence, and query-dependent relevance of relationships between events. In this paper, we propose HAGE, a weighted multi-relational memory framework that reconceptualizes retrieval as sequential, query-conditioned traversal over a unified relational memory graph. Memory is organized as relation-specific graph views over shared memory nodes, where each edge is associated with a trainable relation feature vector encoding multiple relational signals. Given a query, an LLM-based classifier identifies the relational intent, and a routing network dynamically modulates the corresponding dimensions of the edge embedding. Traversal scores are computed via a learned combination of semantic similarity and these query-conditioned edge representations. This allows memory traversal to prioritize high-utility relational paths while softly suppressing noisy or weakly relevant connections. Beyond adaptive traversal, HAGE further introduces a reinforcement learning-based training framework that jointly optimizes routing behavior and edge representations using downstream tasks. Finally, empirical results demonstrate improved long-horizon reasoning accuracy and a favorable accuracy-efficiency trade-off compared to state-of-the-art agentic memory systems. Our code is available at https://github.com/FredJiang0324/HAGE_MVPReview.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09942v1",
+          "url": "https://arxiv.org/abs/2605.09942v1",
+          "categories": [
+            "cs.AI"
+          ],
+          "relevance_score": 0.0,
+          "rank": 4,
+          "ranking_reason": "No direct query-term overlap; ranked after more relevant papers."
+        },
+        {
+          "title": "Harnessing Floating Car Data, Traffic Camera Observations, and Network Flow Analysis for Traffic Volume Estimation",
+          "authors": [
+            "Antonina Kosikova",
+            "Mehmet Kerem Turkcan",
+            "Ahmed Darrat",
+            "Andrew Smyth"
+          ],
+          "abstract": "Cities increasingly rely on vehicle trajectory data to monitor traffic conditions; however, such data offer only a partial and spatially heterogeneous view of network dynamics and exhibit systematic biases across corridors and time periods. In contrast, surveillance cameras can provide high-fidelity traffic information, but only at a limited set of locations, typically sparsely distributed across the road network. We present a hybrid modeling and calibration framework that fuses these complementary data sources to produce physically consistent, network-wide estimates and short-horizon forecasts of traffic volumes. The framework leverages kinematic features derived from the Cell Transmission Model (CTM) formulation within a graph neural network (GNN). By enforcing traffic-flow conservation, capacity limits, and spillback dynamics, the CTM provides a physically grounded representation of traffic flow, while the GNN learns the spatiotemporal evolution of traffic states over the entire road network. To calibrate the model predictions on traffic camera observations, we use a progressive data-assimilation scheme based on an Ensemble Square-Root Kalman filter (EnSRF). A topology-informed flow-weighted transition matrix is further employed to propagate camera-driven corrections to unobserved road segments, enabling real-time, network-wide traffic state and volume estimation. The approach is demonstrated using probe-vehicle trajectory data and municipal traffic cameras in Manhattan, New York City, where it achieves improved accuracy relative to trajectory-based estimates while maintaining physically plausible and network-consistent traffic flows. The proposed framework accommodates varying sensor availability and produces calibrated traffic volumes with uncertainty estimates, supporting operational monitoring and evaluation of transportation policies in data-constrained urban environments.",
+          "published_date": "2026-05-11",
+          "arxiv_id": "2605.09891v1",
+          "url": "https://arxiv.org/abs/2605.09891v1",
+          "categories": [
+            "eess.SY"
+          ],
+          "relevance_score": 0.0,
+          "rank": 5,
+          "ranking_reason": "No direct query-term overlap; ranked after more relevant papers."
+        }
+      ]
+    },
+    "briefing": {
+      "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.md",
+      "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.pdf",
+      "summaries": [
+        {
+          "title": "Continual Harness: Online Adaptation for Self-Improving Foundation Agents",
+          "one_sentence_summary": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making.",
+          "topic_relevance": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making.",
+          "problem": "On Pokemon Red and Emerald across frontier models, Continual Harness starting from scratch substantially reduces button-press cost relative to the minimalist baseline and recovers a majority of the gap to a hand-engineered expert harness, with capability-dependent gains, despite starting from the same raw interface with no curated knowledge, no hand-crafted tools, and no domain scaffolding.",
+          "method": "Not mentioned in abstract",
+          "contribution": "Coding harnesses such as Claude Code and OpenHands wrap foundation models with tools, memory, and planning, but no equivalent exists for embodied agents' long-horizon partial-observability decision-making.",
+          "experiment_or_evidence": "We first report our Gemini Plays Pokemon (GPP) experiments.",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "title and abstract only"
+        },
+        {
+          "title": "Towards Generalist Game Players: An Investigation of Foundation Models in the Game Multiverse",
+          "one_sentence_summary": "The paper presents a unified view of generalist game players based on four pillars—Dataset, Model, Harness, and Benchmark—and outlines a five-level roadmap from single-game mastery to a creator stage in the game multiverse.",
+          "topic_relevance": "Highly relevant because the abstract explicitly includes 'Harness' as one of the four interdependent pillars used to analyze generalist game players.",
+          "problem": "The abstract frames the problem as how to understand and advance generalist game players that can adapt across a multiverse of games with different rules, aesthetics, physics, and objectives, in pursuit of broader AGI-like generality.",
+          "method": "The work traces the full lifecycle of a generalist game player along four interdependent pillars: Dataset, Model, Harness, and Benchmark, analyzes progress as attempts to break five fundamental trade-offs, and charts a five-level roadmap from single-game mastery to the creator stage.",
+          "contribution": "The paper offers a unified lens on the field of generalist game players, identifies four interdependent pillars and five fundamental trade-offs, and proposes a five-level roadmap toward an ultimate creator stage in the game multiverse.",
+          "experiment_or_evidence": "Not mentioned in abstract",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "AI summary grounded in title and abstract only"
+        },
+        {
+          "title": "Agentic Fuzzing: Opportunities and Challenges",
+          "one_sentence_summary": "The paper proposes agentic fuzzing, an approach that uses deep agents seeded by historical bugs to reason about root causes, generate and run proof-of-concept code, and find logic-bug variants across codebases.",
+          "topic_relevance": "Highly relevant to the query \"all:harness\" because the abstract explicitly identifies \"harness engineering\" as one of the three practical challenges in implementing agentic fuzzing.",
+          "problem": "Fuzzers and static analyzers struggle to find logic bugs in mature codebases because triggering such bugs often requires multi-step reasoning without distinctive execution feedback, and bug variants may appear across implementations too different for a single pattern to match.",
+          "method": "The paper proposes agentic fuzzing, where given a reference bug, a deep agent analyzes its root cause, hypothesizes new scenarios elsewhere in the codebase that may share that cause, and verifies each hypothesis by generating and running proof-of-concept code. The abstract also states that AFuzz addresses practical challenges through a four-stage agent pipeline, scenario coverage that deduplicates previously explored scenarios, and a DPP-MAP scheduler that orders seeds by diversity.",
+          "contribution": "The paper introduces agentic fuzzing as a bug-finding approach seeded by historical bugs, identifies three practical challenges including harness engineering, and presents AFuzz with a four-stage pipeline, scenario deduplication, and diversity-based seed scheduling.",
+          "experiment_or_evidence": "The abstract reports that AFuzz was run on the V8 JavaScript engine for about one month and found 40 bugs including three duplicates, received a total $35,000 bounty, and was assigned two CVEs. It also states that AFuzz found 19 bugs including one duplicate in SpiderMonkey and JavaScriptCore using the seeds from V8.",
+          "limitation": "The abstract states that agentic fuzzing is in its early stages and has several remaining open problems discussed in the paper.",
+          "evidence_source": "AI summary grounded in title and abstract only"
+        },
+        {
+          "title": "HAGE: Harnessing Agentic Memory via RL-Driven Weighted Graph Evolution",
+          "one_sentence_summary": "The paper proposes HAGE, a weighted multi-relational memory framework for agentic LLM systems that performs query-conditioned graph traversal and is trained with reinforcement learning to improve memory retrieval.",
+          "topic_relevance": "Relevant because the title includes \"Harnessing,\" which aligns with the query \"all:harness,\" though the ranking reason notes no direct query-term overlap and lower relevance than other papers.",
+          "problem": "Memory retrieval in agentic large language model systems is often treated as a static lookup problem using flat vector search or fixed binary relational graphs, and fixed graph structures cannot capture varying strength, confidence, and query-dependent relevance of relationships between events.",
+          "method": "HAGE organizes memory as relation-specific graph views over shared memory nodes with trainable relation feature vectors on edges; given a query, an LLM-based classifier identifies relational intent, a routing network modulates edge embedding dimensions, traversal scores combine semantic similarity with query-conditioned edge representations, and a reinforcement learning-based training framework jointly optimizes routing behavior and edge representations using downstream tasks.",
+          "contribution": "The paper introduces HAGE, a weighted multi-relational memory framework that reconceptualizes retrieval as sequential, query-conditioned traversal over a unified relational memory graph, along with reinforcement learning-based joint optimization of routing behavior and edge representations.",
+          "experiment_or_evidence": "The abstract states that empirical results demonstrate improved long-horizon reasoning accuracy and a favorable accuracy-efficiency trade-off compared to state-of-the-art agentic memory systems.",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "AI summary grounded in title and abstract only"
+        },
+        {
+          "title": "Harnessing Floating Car Data, Traffic Camera Observations, and Network Flow Analysis for Traffic Volume Estimation",
+          "one_sentence_summary": "The paper presents a hybrid framework that fuses floating car trajectory data and traffic camera observations with network flow analysis to estimate and short-horizon forecast network-wide traffic volumes in a physically consistent way.",
+          "topic_relevance": "Relevant only through the title term \"Harnessing\" matching the query \"all:harness\"; the ranking reason states there is no direct query-term overlap and that it was ranked after more relevant papers.",
+          "problem": "Vehicle trajectory data provide only a partial, spatially heterogeneous, and systematically biased view of traffic conditions, while surveillance cameras provide high-fidelity information only at sparse locations, making network-wide traffic volume estimation difficult.",
+          "method": "The framework combines kinematic features from the Cell Transmission Model (CTM) within a graph neural network (GNN), enforces traffic-flow conservation, capacity limits, and spillback dynamics, and calibrates predictions on traffic camera observations using a progressive data-assimilation scheme based on an Ensemble Square-Root Kalman filter (EnSRF); a topology-informed flow-weighted transition matrix propagates camera-driven corrections to unobserved road segments.",
+          "contribution": "It produces physically grounded, real-time, network-wide traffic state and volume estimates and short-horizon forecasts by fusing complementary data sources, accommodates varying sensor availability, and provides calibrated traffic volumes with uncertainty estimates.",
+          "experiment_or_evidence": "The approach is demonstrated using probe-vehicle trajectory data and municipal traffic cameras in Manhattan, New York City, where it achieves improved accuracy relative to trajectory-based estimates while maintaining physically plausible and network-consistent traffic flows.",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "AI summary grounded in title and abstract only"
+        }
+      ],
+      "graph_analysis": {
+        "num_nodes": 40,
+        "num_edges": 156,
+        "density": 0.2,
+        "average_degree": 7.8,
+        "central_keywords": [
+          {
+            "keyword": "harness",
+            "paper_count": 3,
+            "weighted_degree": 23,
+            "degree": 23
+          },
+          {
+            "keyword": "afuzz",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "agentic fuzzing",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "bug",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "bugs",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "bugs including",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "creator stage",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "evolves within",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "finding",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "game",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          }
+        ],
+        "communities": [
+          {
+            "id": 1,
+            "size": 24,
+            "keywords": [
+              "afuzz",
+              "agentic fuzzing",
+              "agents",
+              "bug",
+              "bugs",
+              "bugs including",
+              "continual harness",
+              "creator stage",
+              "evolves within",
+              "finding",
+              "game",
+              "game multiverse"
+            ]
+          },
+          {
+            "id": 2,
+            "size": 8,
+            "keywords": [
+              "agentic",
+              "edge",
+              "graph",
+              "hage",
+              "memory",
+              "query",
+              "relational",
+              "traversal"
+            ]
+          },
+          {
+            "id": 3,
+            "size": 8,
+            "keywords": [
+              "camera",
+              "data",
+              "estimates",
+              "flow",
+              "network",
+              "physically",
+              "road",
+              "traffic"
+            ]
+          }
+        ],
+        "paper_keywords": {
+          "2605.09998v1": [
+            "harness",
+            "loop",
+            "continual harness",
+            "pokemon",
+            "online",
+            "self",
+            "starting",
+            "agents"
+          ],
+          "2605.09965v1": [
+            "harness",
+            "multiverse",
+            "game",
+            "generalist",
+            "intelligence",
+            "multiverse games",
+            "creator stage",
+            "evolves within",
+            "game multiverse"
+          ],
+          "2605.10074v1": [
+            "harness",
+            "bugs",
+            "agentic fuzzing",
+            "seeds",
+            "afuzz",
+            "bug",
+            "finding",
+            "reasoning",
+            "bugs including"
+          ],
+          "2605.09942v1": [
+            "memory",
+            "relational",
+            "edge",
+            "hage",
+            "query",
+            "traversal",
+            "graph",
+            "agentic"
+          ],
+          "2605.09891v1": [
+            "traffic",
+            "network",
+            "data",
+            "flow",
+            "camera",
+            "estimates",
+            "physically",
+            "road"
+          ]
+        }
+      },
+      "figures": [
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\keyword_graph.svg",
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\top_keywords.svg"
+      ],
+      "retrieval_error": ""
+    }
+  },
+  "output_paths": {
+    "raw_papers": "data/raw/arxiv_papers.json",
+    "ranked_papers": "data/processed/ranked_papers.json",
+    "report": "outputs/reports/daily_briefing.md",
+    "report_pdf": "outputs/reports/daily_briefing.pdf"
+  },
+  "message": "Workflow completed."
+}

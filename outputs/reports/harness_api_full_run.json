@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "retrieval",
+    "ranking",
+    "briefing"
+  ],
+  "outputs": {
+    "retrieval": {
+      "papers": [],
+      "query_keywords": [
+        "safety harness",
+        "fall arrest system",
+        "body harness",
+        "load distribution"
+      ],
+      "keyword_extraction_source": "openai",
+      "resolved_search_query": "((ti:\"safety harness\" OR abs:\"safety harness\") OR ((ti:safety OR abs:safety) AND (ti:harness OR abs:harness))) AND ((ti:\"fall arrest system\" OR abs:\"fall arrest system\") OR ((ti:fall OR abs:fall) AND (ti:arrest OR abs:arrest) AND (ti:system OR abs:system))) AND ((ti:\"body harness\" OR abs:\"body harness\") OR ((ti:body OR abs:body) AND (ti:harness OR abs:harness))) AND ((ti:\"load distribution\" OR abs:\"load distribution\") OR ((ti:load OR abs:load) AND (ti:distribution OR abs:distribution)))"
+    },
+    "ranking": {
+      "ranked_papers": [],
+      "top_k_papers": []
+    },
+    "briefing": {
+      "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.md",
+      "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.pdf",
+      "summaries": [],
+      "graph_analysis": {
+        "num_nodes": 0,
+        "num_edges": 0,
+        "density": 0.0,
+        "average_degree": 0.0,
+        "central_keywords": [],
+        "communities": [],
+        "paper_keywords": {}
+      },
+      "figures": [],
+      "retrieval_error": ""
+    }
+  },
+  "output_paths": {
+    "raw_papers": "data/raw/arxiv_papers.json",
+    "ranked_papers": "data/processed/ranked_papers.json",
+    "report": "outputs/reports/daily_briefing.md",
+    "report_pdf": "outputs/reports/daily_briefing.pdf"
+  },
+  "message": "Workflow completed."
+}

@@ -21,3 +21,9 @@ retrieval:
   llm_model: gpt-5.2
   llm_timeout_seconds: 20
   llm_max_keywords: 6
+
+briefing:
+  ai_summary_enabled: true
+  llm_model: gpt-5.4
+  ai_summary_timeout_seconds: 60
+  chat_timeout_seconds: 60
