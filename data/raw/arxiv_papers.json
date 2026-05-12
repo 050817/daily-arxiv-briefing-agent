@@ -1,3 +1,10 @@
 {
-  "papers": []
+  "papers": [],
+  "query_keywords": [
+    "harness engineering",
+    "wire harness design",
+    "cable harness"
+  ],
+  "keyword_extraction_source": "openai",
+  "resolved_search_query": "((ti:\"harness engineering\" OR abs:\"harness engineering\") OR ((ti:harness OR abs:harness) AND (ti:engineering OR abs:engineering))) AND ((ti:\"wire harness design\" OR abs:\"wire harness design\") OR ((ti:wire OR abs:wire) AND (ti:harness OR abs:harness) AND (ti:design OR abs:design))) AND ((ti:\"cable harness\" OR abs:\"cable harness\") OR ((ti:cable OR abs:cable) AND (ti:harness OR abs:harness)))"
 }

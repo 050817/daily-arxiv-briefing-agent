@@ -1,62 +1,45 @@
 # Daily arXiv Research Briefing
 
-- Query: graph neural networks
-- Generated at: 2026-05-10 10:17 UTC
-- Papers included: 1
+- Query: harness engineering
+- Generated at: 2026-05-12 02:24 UTC
+- Papers included: 0
 - Evidence policy: summaries use only paper titles and abstracts; unsupported fields say "Not mentioned in abstract".
+
+## Retrieval Status
+
+No papers were available for briefing. This may mean the query returned no results, date filtering removed all results, or retrieval input was empty.
 
 ## Top Papers
 
-| Rank | Title | Score | Categories | Link |
-|---:|---|---:|---|---|
-| 1 | Graph Neural Networks for Social Misinformation Detection | 0.95 | cs.SI, cs.LG | [arXiv](https://arxiv.org/abs/2605.00001) |
+No papers were provided to the briefing Skill.
 
 ## Structured Summaries
 
-### 1. Graph Neural Networks for Social Misinformation Detection
-
-- One-sentence summary: This paper studies graph neural networks for misinformation detection in social networks.
-- Topic relevance: This paper studies graph neural networks for misinformation detection in social networks.
-- Problem: The title frames the target problem as Social Misinformation Detection.
-- Method: This paper studies graph neural networks for misinformation detection in social networks.
-- Contribution: Not mentioned in abstract
-- Experiment or evidence: Not mentioned in abstract
-- Limitation: Not mentioned in abstract
+No summaries were generated because no papers were available.
 
 ## Keyword Network Analysis
 
-- Nodes: 6
-- Edges: 15
-- Density: 1.0
-- Average degree: 5.0
+Analysis not run because no papers were retrieved or supplied.
 
 ### Central Keywords
 
-| Keyword | Paper Count | Weighted Degree |
-|---|---:|---:|
-| graph neural networks | 1 | 5 |
-| graph | 1 | 5 |
-| networks | 1 | 5 |
-| neural | 1 | 5 |
-| misinformation detection | 1 | 5 |
-| social networks | 1 | 5 |
+No central keywords were extracted because no papers were available.
 
 ### Keyword Communities
 
-- Community 1 (6 keywords): graph, graph neural networks, misinformation detection, networks, neural, social networks
+No keyword communities were detected because no papers were available.
 
 ## Trend Interpretation
 
-The most connected extracted topics are graph neural networks, graph, networks, neural, misinformation detection. This indicates recurring vocabulary in the selected abstracts, not a claim about the broader arXiv corpus.
+Trend interpretation not run because there is no paper evidence for this run.
 
 ## Recommended Reading Order
 
-1. Graph Neural Networks for Social Misinformation Detection - Matches the query topic directly.
+No reading order is available.
 
 ## Figures
 
-- outputs/figures/keyword_graph.svg
-- outputs/figures/top_keywords.svg
+No figures were generated because no paper keyword graph was available.
 
 ## Limitations
 

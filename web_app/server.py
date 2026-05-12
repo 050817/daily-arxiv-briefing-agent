@@ -22,7 +22,12 @@ else:
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agent.io_utils import ensure_dir, load_config, load_json, resolve_path, save_json
-from agent.openai_compat import has_openai_compatible_api_key, load_openai_compatible_settings, resolve_openai_compatible_config
+from agent.openai_compat import (
+    has_openai_compatible_api_key,
+    load_openai_compatible_settings,
+    normalize_openai_compatible_base_url,
+    resolve_openai_compatible_config,
+)
 from agent.orchestrator import DailyArxivBriefingAgent
 from skills.briefing_graph.skill import BriefingGraphSkill
 
@@ -50,14 +55,14 @@ class BriefingWebApp:
         settings = load_openai_compatible_settings()
         resolved = resolve_openai_compatible_config(default_model="gpt-5.4")
         return {
-            "api_url": settings.get("api_url") or resolved["api_url"],
+            "api_url": normalize_openai_compatible_base_url(settings.get("api_url") or resolved["api_url"]),
             "model": settings.get("model") or resolved["model"],
             "api_key": settings.get("api_key", ""),
             "has_api_key": has_openai_compatible_api_key(),
         }
 
     def save_settings(self, payload: dict[str, Any]) -> dict[str, Any]:
-        api_url = str(payload.get("api_url", "")).strip()
+        api_url = normalize_openai_compatible_base_url(str(payload.get("api_url", "")).strip())
         model = str(payload.get("model", "")).strip() or "gpt-5.4"
         api_key = str(payload.get("api_key", "")).strip()
         current = load_openai_compatible_settings()

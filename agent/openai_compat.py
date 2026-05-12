@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 from agent.io_utils import load_json, resolve_path
 
@@ -36,13 +37,14 @@ def resolve_openai_compatible_config(
     default_model: str = "gpt-4.1-mini",
 ) -> dict[str, str]:
     settings = load_openai_compatible_settings()
+    api_url = (
+        str(configured_base_url).strip()
+        or settings.get("api_url", "")
+        or os.environ.get("OPENAI_BASE_URL", "").strip()
+        or default_base_url
+    )
     return {
-        "api_url": (
-            str(configured_base_url).strip()
-            or settings.get("api_url", "")
-            or os.environ.get("OPENAI_BASE_URL", "").strip()
-            or default_base_url
-        ),
+        "api_url": normalize_openai_compatible_base_url(api_url),
         "model": (
             str(configured_model).strip()
             or settings.get("model", "")
@@ -59,3 +61,14 @@ def resolve_openai_compatible_config(
 
 def has_openai_compatible_api_key(configured_api_key: str = "") -> bool:
     return bool(resolve_openai_compatible_config(configured_api_key=configured_api_key).get("api_key"))
+
+
+def normalize_openai_compatible_base_url(api_url: str) -> str:
+    value = str(api_url or "").strip().rstrip("/")
+    if not value:
+        return value
+
+    parsed = urlsplit(value)
+    if parsed.scheme and parsed.netloc and parsed.path in {"", "/"}:
+        return urlunsplit((parsed.scheme, parsed.netloc, "/v1", "", ""))
+    return value

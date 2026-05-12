@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "retrieval",
+    "ranking",
+    "briefing"
+  ],
+  "outputs": {
+    "retrieval": {
+      "papers": [],
+      "retrieval_error": "Failed to retrieve papers from arXiv after 3 attempt(s): HTTP Error 429: Too Many Requests",
+      "query": "what is engineering harness",
+      "date_range": "last 7 days",
+      "query_keywords": [
+        "what is engineering harness"
+      ],
+      "keyword_extraction_source": "heuristic",
+      "resolved_search_query": "((ti:\"what is\" OR abs:\"what is\") OR ((ti:what OR abs:what) AND (ti:is OR abs:is))) AND ((ti:\"engineering harness\" OR abs:\"engineering harness\") OR ((ti:engineering OR abs:engineering) AND (ti:harness OR abs:harness)))"
+    },
+    "ranking": {
+      "ranked_papers": [],
+      "top_k_papers": []
+    },
+    "briefing": {
+      "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.md",
+      "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.pdf",
+      "summaries": [],
+      "graph_analysis": {
+        "num_nodes": 0,
+        "num_edges": 0,
+        "density": 0.0,
+        "average_degree": 0.0,
+        "central_keywords": [],
+        "communities": [],
+        "paper_keywords": {}
+      },
+      "figures": [],
+      "retrieval_error": "Failed to retrieve papers from arXiv after 3 attempt(s): HTTP Error 429: Too Many Requests"
+    }
+  },
+  "output_paths": {
+    "raw_papers": "data/raw/arxiv_papers.json",
+    "ranked_papers": "data/processed/ranked_papers.json",
+    "report": "outputs/reports/daily_briefing.md",
+    "report_pdf": "outputs/reports/daily_briefing.pdf"
+  },
+  "message": "Workflow completed."
+}

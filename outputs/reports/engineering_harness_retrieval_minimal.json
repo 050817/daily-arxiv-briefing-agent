@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "retrieval"
+  ],
+  "outputs": {
+    "retrieval": {
+      "papers": [],
+      "retrieval_error": "Failed to retrieve papers from arXiv after 3 attempt(s): The read operation timed out",
+      "query": "ti:harness engineering OR abs:harness engineering",
+      "date_range": "all",
+      "query_keywords": [],
+      "keyword_extraction_source": "direct_query",
+      "resolved_search_query": "ti:harness engineering OR abs:harness engineering"
+    }
+  },
+  "output_paths": {
+    "raw_papers": "data/raw/arxiv_papers.json"
+  },
+  "message": "Workflow completed."
+}

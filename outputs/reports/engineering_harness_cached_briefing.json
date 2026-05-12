@@ -1,0 +1,173 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "briefing"
+  ],
+  "outputs": {
+    "ranking": {
+      "ranked_papers": [
+        {
+          "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+          "authors": [
+            "S. Researcher"
+          ],
+          "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena.",
+          "published_date": "2026-05-07",
+          "arxiv_id": "2605.06177v1",
+          "url": "https://arxiv.org/abs/2605.06177v1",
+          "categories": [
+            "cs.AI"
+          ],
+          "relevance_score": 0.1417,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+        }
+      ],
+      "top_k_papers": [
+        {
+          "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+          "authors": [
+            "S. Researcher"
+          ],
+          "abstract": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering. We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents. The toolkit, configurations, and per-task traces are available at https://github.com/AI-in-Health/BioMedArena.",
+          "published_date": "2026-05-07",
+          "arxiv_id": "2605.06177v1",
+          "url": "https://arxiv.org/abs/2605.06177v1",
+          "categories": [
+            "cs.AI"
+          ],
+          "relevance_score": 0.1417,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+        }
+      ]
+    },
+    "briefing": {
+      "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.md",
+      "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.pdf",
+      "summaries": [
+        {
+          "title": "BioMedArena: An Open-source Toolkit for Building and Evaluating Biomedical Deep Research Agents",
+          "one_sentence_summary": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering.",
+          "topic_relevance": "Matches query terms in the abstract: engineering, harness.",
+          "problem": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering.",
+          "method": "We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents.",
+          "contribution": "We call this the per-paper engineering tax and release BioMedArena, an open-source toolkit that alleviates it and provides an arena for fair comparison of different foundation models when evaluating them as deep-research agents.",
+          "experiment_or_evidence": "Building a deep research agent today is an exercise in glue code: the same backbone evaluated on the same benchmark can report different accuracies in different papers because harness and tool registry all differ, and integrating a new foundation model into a comparable evaluation surface costs weeks of model-specific engineering.",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "title and abstract only"
+        }
+      ],
+      "graph_analysis": {
+        "num_nodes": 10,
+        "num_edges": 45,
+        "density": 1.0,
+        "average_degree": 9.0,
+        "central_keywords": [
+          {
+            "keyword": "engineering",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "harness",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "biomedarena",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "biomedarena open",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "deep research",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "different",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "open source",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "research agents",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "source toolkit",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          },
+          {
+            "keyword": "toolkit",
+            "paper_count": 1,
+            "weighted_degree": 9,
+            "degree": 9
+          }
+        ],
+        "communities": [
+          {
+            "id": 1,
+            "size": 10,
+            "keywords": [
+              "biomedarena",
+              "biomedarena open",
+              "deep research",
+              "different",
+              "engineering",
+              "harness",
+              "open source",
+              "research agents",
+              "source toolkit",
+              "toolkit"
+            ]
+          }
+        ],
+        "paper_keywords": {
+          "2605.06177v1": [
+            "engineering",
+            "harness",
+            "deep research",
+            "biomedarena",
+            "different",
+            "toolkit",
+            "biomedarena open",
+            "open source",
+            "research agents",
+            "source toolkit"
+          ]
+        }
+      },
+      "figures": [
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\keyword_graph.svg",
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\top_keywords.svg"
+      ],
+      "retrieval_error": ""
+    }
+  },
+  "output_paths": {
+    "report": "outputs/reports/daily_briefing.md",
+    "report_pdf": "outputs/reports/daily_briefing.pdf"
+  },
+  "message": "Workflow completed."
+}

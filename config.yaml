@@ -13,9 +13,9 @@ defaults:
   ranking_method: tfidf
 
 retrieval:
-  request_timeout_seconds: 30
-  max_retries: 2
-  retry_backoff_seconds: 1
+  request_timeout_seconds: 60
+  max_retries: 1
+  retry_backoff_seconds: 5
   allow_empty_on_error: true
   llm_keyword_extraction_enabled: true
   llm_model: gpt-5.2

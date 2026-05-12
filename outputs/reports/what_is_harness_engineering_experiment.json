@@ -1,0 +1,199 @@
+{
+  "status": "success",
+  "completed_stages": [
+    "retrieval",
+    "ranking",
+    "briefing"
+  ],
+  "outputs": {
+    "retrieval": {
+      "papers": [
+        {
+          "title": "Optimal Embedding of Wiring Diagrams in Constrained Three-Dimensional Spaces",
+          "authors": [
+            "Víctor Blanco",
+            "Gabriel González",
+            "Justo Puerto"
+          ],
+          "abstract": "This paper investigates the \\emph{Wiring Diagram Problem} (WDP), a three-dimensional layout design problem arising in industrial applications such as cable harness design and pipeline routing in constrained environments. In these settings, hierarchical tree-like systems composed of supply units, intermediate devices (e.g., valves or junctions), and terminal components must be spatially arranged and interconnected while satisfying stringent engineering requirements, including safety separation distances, obstacle avoidance, geometric feasibility, and constructibility constraints. We develop an optimization-based framework that formulates the WDP as a mixed-integer linear programming model capturing both topological and spatial design requirements within a unified formulation. To address the combinatorial and geometric complexity of three-dimensional routing, the feasible design space is discretized into structured network graphs that preserve engineering constraints while reducing dimensionality. The resulting model minimizes total cable or pipeline length while ensuring compliance with all technical specifications. Computational experiments on representative industrial instances demonstrate the robustness and practical applicability of the proposed approach for automated layout generation.",
+          "published_date": "2026-03-09",
+          "arxiv_id": "2603.08157v1",
+          "url": "https://arxiv.org/abs/2603.08157v1",
+          "categories": [
+            "math.OC"
+          ]
+        }
+      ],
+      "query_keywords": [
+        "harness engineering",
+        "wire harness design",
+        "cable harness"
+      ],
+      "keyword_extraction_source": "openai",
+      "resolved_search_query": "((ti:\"harness engineering\" OR abs:\"harness engineering\") OR ((ti:harness OR abs:harness) AND (ti:engineering OR abs:engineering))) AND ((ti:\"wire harness design\" OR abs:\"wire harness design\") OR ((ti:wire OR abs:wire) AND (ti:harness OR abs:harness) AND (ti:design OR abs:design))) AND ((ti:\"cable harness\" OR abs:\"cable harness\") OR ((ti:cable OR abs:cable) AND (ti:harness OR abs:harness)))"
+    },
+    "ranking": {
+      "ranked_papers": [
+        {
+          "title": "Optimal Embedding of Wiring Diagrams in Constrained Three-Dimensional Spaces",
+          "authors": [
+            "Víctor Blanco",
+            "Gabriel González",
+            "Justo Puerto"
+          ],
+          "abstract": "This paper investigates the \\emph{Wiring Diagram Problem} (WDP), a three-dimensional layout design problem arising in industrial applications such as cable harness design and pipeline routing in constrained environments. In these settings, hierarchical tree-like systems composed of supply units, intermediate devices (e.g., valves or junctions), and terminal components must be spatially arranged and interconnected while satisfying stringent engineering requirements, including safety separation distances, obstacle avoidance, geometric feasibility, and constructibility constraints. We develop an optimization-based framework that formulates the WDP as a mixed-integer linear programming model capturing both topological and spatial design requirements within a unified formulation. To address the combinatorial and geometric complexity of three-dimensional routing, the feasible design space is discretized into structured network graphs that preserve engineering constraints while reducing dimensionality. The resulting model minimizes total cable or pipeline length while ensuring compliance with all technical specifications. Computational experiments on representative industrial instances demonstrate the robustness and practical applicability of the proposed approach for automated layout generation.",
+          "published_date": "2026-03-09",
+          "arxiv_id": "2603.08157v1",
+          "url": "https://arxiv.org/abs/2603.08157v1",
+          "categories": [
+            "math.OC"
+          ],
+          "relevance_score": 0.0766,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+        }
+      ],
+      "top_k_papers": [
+        {
+          "title": "Optimal Embedding of Wiring Diagrams in Constrained Three-Dimensional Spaces",
+          "authors": [
+            "Víctor Blanco",
+            "Gabriel González",
+            "Justo Puerto"
+          ],
+          "abstract": "This paper investigates the \\emph{Wiring Diagram Problem} (WDP), a three-dimensional layout design problem arising in industrial applications such as cable harness design and pipeline routing in constrained environments. In these settings, hierarchical tree-like systems composed of supply units, intermediate devices (e.g., valves or junctions), and terminal components must be spatially arranged and interconnected while satisfying stringent engineering requirements, including safety separation distances, obstacle avoidance, geometric feasibility, and constructibility constraints. We develop an optimization-based framework that formulates the WDP as a mixed-integer linear programming model capturing both topological and spatial design requirements within a unified formulation. To address the combinatorial and geometric complexity of three-dimensional routing, the feasible design space is discretized into structured network graphs that preserve engineering constraints while reducing dimensionality. The resulting model minimizes total cable or pipeline length while ensuring compliance with all technical specifications. Computational experiments on representative industrial instances demonstrate the robustness and practical applicability of the proposed approach for automated layout generation.",
+          "published_date": "2026-03-09",
+          "arxiv_id": "2603.08157v1",
+          "url": "https://arxiv.org/abs/2603.08157v1",
+          "categories": [
+            "math.OC"
+          ],
+          "relevance_score": 0.0766,
+          "rank": 1,
+          "ranking_reason": "Matches query terms in the abstract: engineering, harness."
+        }
+      ]
+    },
+    "briefing": {
+      "report_markdown": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.md",
+      "report_pdf": "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\reports\\daily_briefing.pdf",
+      "summaries": [
+        {
+          "title": "Optimal Embedding of Wiring Diagrams in Constrained Three-Dimensional Spaces",
+          "one_sentence_summary": "This paper investigates the \\emph{Wiring Diagram Problem} (WDP), a three-dimensional layout design problem arising in industrial applications such as cable harness design and pipeline routing in constrained environments.",
+          "topic_relevance": "Matches query terms in the abstract: engineering, harness.",
+          "problem": "This paper investigates the \\emph{Wiring Diagram Problem} (WDP), a three-dimensional layout design problem arising in industrial applications such as cable harness design and pipeline routing in constrained environments.",
+          "method": "We develop an optimization-based framework that formulates the WDP as a mixed-integer linear programming model capturing both topological and spatial design requirements within a unified formulation.",
+          "contribution": "We develop an optimization-based framework that formulates the WDP as a mixed-integer linear programming model capturing both topological and spatial design requirements within a unified formulation.",
+          "experiment_or_evidence": "Computational experiments on representative industrial instances demonstrate the robustness and practical applicability of the proposed approach for automated layout generation.",
+          "limitation": "Not mentioned in abstract",
+          "evidence_source": "title and abstract only"
+        }
+      ],
+      "graph_analysis": {
+        "num_nodes": 9,
+        "num_edges": 36,
+        "density": 1.0,
+        "average_degree": 8.0,
+        "central_keywords": [
+          {
+            "keyword": "engineering",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "harness",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "cable",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "constrained",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "constraints",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "design",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "geometric",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "three dimensional",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          },
+          {
+            "keyword": "while",
+            "paper_count": 1,
+            "weighted_degree": 8,
+            "degree": 8
+          }
+        ],
+        "communities": [
+          {
+            "id": 1,
+            "size": 9,
+            "keywords": [
+              "cable",
+              "constrained",
+              "constraints",
+              "design",
+              "engineering",
+              "geometric",
+              "harness",
+              "three dimensional",
+              "while"
+            ]
+          }
+        ],
+        "paper_keywords": {
+          "2603.08157v1": [
+            "harness",
+            "design",
+            "three dimensional",
+            "while",
+            "cable",
+            "constrained",
+            "constraints",
+            "engineering",
+            "geometric"
+          ]
+        }
+      },
+      "figures": [
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\keyword_graph.svg",
+        "C:\\Users\\86172\\Desktop\\socialnet\\final_project\\outputs\\figures\\top_keywords.svg"
+      ],
+      "retrieval_error": ""
+    }
+  },
+  "output_paths": {
+    "raw_papers": "data/raw/arxiv_papers.json",
+    "ranked_papers": "data/processed/ranked_papers.json",
+    "report": "outputs/reports/daily_briefing.md",
+    "report_pdf": "outputs/reports/daily_briefing.pdf"
+  },
+  "message": "Workflow completed."
+}
