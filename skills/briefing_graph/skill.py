@@ -176,6 +176,13 @@ class BriefingGraphSkill:
         graph_analysis = self.analyze_graph(graph)
 
         figures = self._write_visualizations(graph, graph_analysis, figures_dir) if papers else []
+        report_insights = self.generate_report_insights(
+            query,
+            papers,
+            summaries,
+            graph_analysis,
+            retrieval_error=retrieval_error,
+        )
         report_path = self.generate_markdown_report(
             query,
             papers,
@@ -185,6 +192,7 @@ class BriefingGraphSkill:
             output_path,
             retrieval_error=retrieval_error,
             retrieved_paper_count=retrieved_paper_count,
+            report_insights=report_insights,
         )
         pdf_path = self.generate_pdf_report(
             query,
@@ -195,6 +203,7 @@ class BriefingGraphSkill:
             output_pdf_path,
             retrieval_error=retrieval_error,
             retrieved_paper_count=retrieved_paper_count,
+            report_insights=report_insights,
         )
 
         return {
@@ -204,6 +213,7 @@ class BriefingGraphSkill:
             "graph_analysis": graph_analysis,
             "figures": figures,
             "retrieval_error": retrieval_error,
+            "report_insights": report_insights,
         }
 
     def generate_structured_summary(self, paper: dict[str, Any], query: str = "") -> dict[str, Any]:
@@ -213,6 +223,21 @@ class BriefingGraphSkill:
             except Exception:
                 pass
         return self._generate_rule_structured_summary(paper, query)
+
+    def generate_report_insights(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+        retrieval_error: str = "",
+    ) -> dict[str, Any]:
+        if self._ai_summary_enabled() and papers and not retrieval_error:
+            try:
+                return self._generate_ai_report_insights(query, papers, summaries, graph_analysis)
+            except Exception:
+                pass
+        return self._generate_rule_report_insights(query, papers, summaries, graph_analysis, retrieval_error)
 
     def _generate_rule_structured_summary(self, paper: dict[str, Any], query: str = "") -> dict[str, Any]:
         title = self._clean_text(str(paper.get("title", "")))
@@ -384,6 +409,172 @@ class BriefingGraphSkill:
             if not summary[key]:
                 summary[key] = "Not mentioned in abstract"
         return summary
+
+    def _generate_ai_report_insights(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
+        context = self._report_insight_context(query, papers, summaries, graph_analysis)
+        prompt = (
+            "Create report-level sections for an arXiv research briefing. "
+            "Use only the provided paper titles, abstracts, ranking reasons, summaries, and keyword graph data. "
+            "Do not infer full-paper results, datasets, citations, or claims that are not present. "
+            "Return JSON only with these keys: "
+            "trend_interpretation as a string, "
+            "recommended_reading_order as an array of strings, "
+            "limitations as an array of strings. "
+            "Keep the writing concise and readable. "
+            "If there is not enough evidence, say so directly.\n\n"
+            f"{context}"
+        )
+        content = self._call_openai_chat(
+            [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a careful research briefing assistant. "
+                        "You must return valid JSON and keep every statement grounded in the provided evidence."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            timeout_seconds=float(self.briefing_config.get("ai_summary_timeout_seconds", 60)),
+        )
+        payload = self._parse_json_object(content)
+        return self._normalize_report_insights(
+            payload,
+            self._generate_rule_report_insights(query, papers, summaries, graph_analysis, ""),
+            evidence_source="AI report insights grounded in selected titles, abstracts, rankings, and keyword graph only",
+        )
+
+    def _generate_rule_report_insights(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+        retrieval_error: str = "",
+    ) -> dict[str, Any]:
+        central_keywords = graph_analysis.get("central_keywords", [])
+        relevance_warning = self._build_relevance_warning(query, papers)
+        if not papers:
+            trend = "Trend interpretation not run because there is no paper evidence for this run."
+        elif relevance_warning:
+            trend = (
+                "Keyword analysis is available, but the selected papers are only weakly cohesive for the query. "
+                "Treat the graph as a description of retrieved abstracts, not as a focused map of the full query topic."
+            )
+        elif central_keywords:
+            top_terms = ", ".join(str(item.get("keyword", "")) for item in central_keywords[:5] if item.get("keyword"))
+            trend = (
+                "The most connected extracted topics are "
+                f"{top_terms}. This indicates recurring vocabulary in the selected abstracts, "
+                "not a claim about the broader arXiv corpus."
+            )
+        else:
+            trend = "Not enough keyword evidence was available to infer topic patterns."
+
+        if papers:
+            reading_order = [
+                f"{index}. {paper.get('title', 'Untitled paper')} - {paper.get('ranking_reason', 'Ranked by the previous relevance Skill.')}"
+                for index, paper in enumerate(papers, start=1)
+            ]
+        else:
+            reading_order = ["No reading order is available."]
+
+        if retrieval_error and not papers:
+            limitations = [
+                "Primary limitation for this run: no source papers were available because upstream arXiv retrieval failed.",
+                "No ranking, summarization, keyword graph analysis, trend interpretation, or figures should be treated as substantive research output for this run.",
+                "Retry later or provide cached paper JSON to run downstream Skills without calling arXiv again.",
+            ]
+        else:
+            limitations = self._search_limitations(retrieval_error, papers, relevance_warning)
+
+        return {
+            "trend_interpretation": trend,
+            "recommended_reading_order": reading_order,
+            "limitations": limitations,
+            "evidence_source": "local report rules grounded in selected titles, abstracts, rankings, and keyword graph",
+        }
+
+    def _normalize_report_insights(
+        self,
+        payload: dict[str, Any],
+        fallback: dict[str, Any],
+        evidence_source: str,
+    ) -> dict[str, Any]:
+        trend = self._clean_text(str(payload.get("trend_interpretation", "")))
+        reading_order = self._normalize_string_list(payload.get("recommended_reading_order"))
+        limitations = self._normalize_string_list(payload.get("limitations"))
+        return {
+            "trend_interpretation": trend or fallback["trend_interpretation"],
+            "recommended_reading_order": reading_order or list(fallback["recommended_reading_order"]),
+            "limitations": limitations or list(fallback["limitations"]),
+            "evidence_source": evidence_source,
+        }
+
+    def _normalize_string_list(self, value: Any) -> list[str]:
+        if isinstance(value, list):
+            items = value
+        elif isinstance(value, str) and value.strip():
+            items = [value]
+        else:
+            return []
+        normalized = [self._clean_text(str(item)) for item in items]
+        return [item for item in normalized if item]
+
+    def _report_insight_context(
+        self,
+        query: str,
+        papers: list[dict[str, Any]],
+        summaries: list[dict[str, Any]],
+        graph_analysis: dict[str, Any],
+    ) -> str:
+        central_keywords = [
+            {
+                "keyword": item.get("keyword", ""),
+                "paper_count": item.get("paper_count", 0),
+                "weighted_degree": item.get("weighted_degree", 0),
+            }
+            for item in graph_analysis.get("central_keywords", [])[:10]
+        ]
+        paper_context = []
+        summary_by_title = {summary.get("title", ""): summary for summary in summaries}
+        for index, paper in enumerate(papers[:8], start=1):
+            title = self._clean_text(str(paper.get("title", "Untitled paper")))
+            summary = summary_by_title.get(title, summaries[index - 1] if index - 1 < len(summaries) else {})
+            paper_context.append(
+                {
+                    "rank": paper.get("rank", index),
+                    "title": title,
+                    "categories": paper.get("categories", []),
+                    "relevance_score": paper.get("relevance_score", ""),
+                    "ranking_reason": paper.get("ranking_reason", ""),
+                    "abstract": self._clean_text(str(paper.get("abstract", "")))[:1800],
+                    "summary": {
+                        "topic_relevance": summary.get("topic_relevance", ""),
+                        "method": summary.get("method", ""),
+                        "contribution": summary.get("contribution", ""),
+                        "limitation": summary.get("limitation", ""),
+                    },
+                }
+            )
+        payload = {
+            "query": query or "Not provided",
+            "papers": paper_context,
+            "keyword_graph": {
+                "num_nodes": graph_analysis.get("num_nodes", 0),
+                "num_edges": graph_analysis.get("num_edges", 0),
+                "density": graph_analysis.get("density", 0.0),
+                "central_keywords": central_keywords,
+                "communities": graph_analysis.get("communities", [])[:5],
+            },
+        }
+        return json.dumps(payload, ensure_ascii=False, indent=2)
 
     def _fallback_archive_answer(self, message: str, context: str) -> str:
         terms = [term.lower() for term in message.split() if len(term) > 2]
@@ -566,6 +757,7 @@ class BriefingGraphSkill:
         output_path: str | None = None,
         retrieval_error: str = "",
         retrieved_paper_count: int | None = None,
+        report_insights: dict[str, Any] | None = None,
     ) -> str:
         output_path = output_path or self.paths.get("report", "outputs/reports/daily_briefing.md")
         resolved = ensure_parent(output_path)
@@ -577,6 +769,7 @@ class BriefingGraphSkill:
             figures or [],
             retrieval_error=retrieval_error,
             retrieved_paper_count=retrieved_paper_count,
+            report_insights=report_insights,
         )
         resolved.write_text(report, encoding="utf-8")
         return str(resolved)
@@ -591,6 +784,7 @@ class BriefingGraphSkill:
         output_path: str | None = None,
         retrieval_error: str = "",
         retrieved_paper_count: int | None = None,
+        report_insights: dict[str, Any] | None = None,
     ) -> str:
         output_path = output_path or self.paths.get("report_pdf", "outputs/reports/daily_briefing.pdf")
         resolved = ensure_parent(output_path)
@@ -602,6 +796,7 @@ class BriefingGraphSkill:
             figures or [],
             retrieval_error=retrieval_error,
             retrieved_paper_count=retrieved_paper_count,
+            report_insights=report_insights,
         )
         self._write_pdf_report(query, sections, str(resolved))
         return str(resolved)
@@ -615,11 +810,19 @@ class BriefingGraphSkill:
         figures: list[str],
         retrieval_error: str = "",
         retrieved_paper_count: int | None = None,
+        report_insights: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         central_keywords = graph_analysis.get("central_keywords", [])
         communities = graph_analysis.get("communities", [])
         relevance_warning = self._build_relevance_warning(query, papers)
         top_keywords = ", ".join(item["keyword"] for item in central_keywords[:5]) or "Not available"
+        insights = report_insights or self._generate_rule_report_insights(
+            query,
+            papers,
+            summaries,
+            graph_analysis,
+            retrieval_error,
+        )
         search_status = "Completed"
         if retrieval_error:
             search_status = f"Retrieval failed: {self._format_retrieval_error(retrieval_error)}"
@@ -679,15 +882,7 @@ class BriefingGraphSkill:
             },
             {
                 "title": "5. Research Trend Map",
-                "body": [
-                    (
-                        "The most connected extracted topics are "
-                        f"{top_keywords}. This describes recurring vocabulary in the selected abstracts, "
-                        "not the broader arXiv corpus."
-                    )
-                    if papers
-                    else "Trend analysis was not run because no papers were available."
-                ],
+                "body": [insights["trend_interpretation"]],
             },
             {
                 "title": "6. Keyword / Topic Network",
@@ -707,11 +902,7 @@ class BriefingGraphSkill:
             },
             {
                 "title": "8. Suggested Reading Order",
-                "body": [
-                    f"{index}. {paper.get('title', 'Untitled paper')} - {paper.get('ranking_reason', 'Ranked by relevance score.')}"
-                    for index, paper in enumerate(papers, start=1)
-                ]
-                or ["No reading order is available."],
+                "body": insights["recommended_reading_order"],
             },
             {
                 "title": "9. Possible Research Ideas",
@@ -719,7 +910,7 @@ class BriefingGraphSkill:
             },
             {
                 "title": "10. Limitations of This Search",
-                "body": self._search_limitations(retrieval_error, papers, relevance_warning),
+                "body": insights["limitations"],
             },
         ]
 
@@ -964,10 +1155,18 @@ class BriefingGraphSkill:
         figures: list[str],
         retrieval_error: str = "",
         retrieved_paper_count: int | None = None,
+        report_insights: dict[str, Any] | None = None,
     ) -> str:
         generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         central_keywords = graph_analysis.get("central_keywords", [])
         communities = graph_analysis.get("communities", [])
+        insights = report_insights or self._generate_rule_report_insights(
+            query,
+            papers,
+            summaries,
+            graph_analysis,
+            retrieval_error,
+        )
 
         lines = [
             "# Daily arXiv Research Briefing",
@@ -1082,31 +1281,11 @@ class BriefingGraphSkill:
             lines.append("No keyword communities were detected.")
 
         lines.extend(["", "## Trend Interpretation", ""])
-        relevance_warning = self._build_relevance_warning(query, papers)
-        if not papers:
-            lines.append("Trend interpretation not run because there is no paper evidence for this run.")
-        elif relevance_warning:
-            lines.append(
-                "Keyword analysis is available, but the selected papers are only weakly cohesive for the query. "
-                "Treat the graph as a description of retrieved abstracts, not as a focused map of the full query topic."
-            )
-        elif central_keywords:
-            top_terms = ", ".join(item["keyword"] for item in central_keywords[:5])
-            lines.append(
-                "The most connected extracted topics are "
-                f"{top_terms}. This indicates recurring vocabulary in the selected abstracts, "
-                "not a claim about the broader arXiv corpus."
-            )
-        else:
-            lines.append("Not enough keyword evidence was available to infer topic patterns.")
+        lines.append(insights["trend_interpretation"])
+        lines.append("")
 
-        lines.extend(["", "## Recommended Reading Order", ""])
-        if papers:
-            for index, paper in enumerate(papers, start=1):
-                reason = paper.get("ranking_reason", "Ranked by the previous relevance Skill.")
-                lines.append(f"{index}. {paper.get('title', 'Untitled paper')} - {reason}")
-        else:
-            lines.append("No reading order is available.")
+        lines.extend(["## Recommended Reading Order", ""])
+        lines.extend(insights["recommended_reading_order"])
 
         lines.extend(["", "## Figures", ""])
         if figures:
@@ -1116,24 +1295,9 @@ class BriefingGraphSkill:
             lines.append("No figures were generated because no paper keyword graph was available.")
 
         lines.extend(["", "## Limitations", ""])
-        if retrieval_error and not papers:
-            lines.extend(
-                [
-                    "- Primary limitation for this run: no source papers were available because upstream arXiv retrieval failed.",
-                    "- No ranking, summarization, keyword graph analysis, trend interpretation, or figures should be treated as substantive research output for this run.",
-                    "- Retry later or provide cached paper JSON to run downstream Skills without calling arXiv again.",
-                    "",
-                ]
-            )
-        else:
-            lines.extend(
-                [
-                    "- This report only uses title, abstract, metadata, and ranking fields supplied to Skill 3.",
-                    "- It does not read full PDFs, citations, experiments, or external web pages.",
-                    "- Keyword communities are based on co-occurrence in the selected Top-K papers, so they are descriptive rather than causal.",
-                    "",
-                ]
-            )
+        for limitation in insights["limitations"]:
+            lines.append(f"- {limitation}")
+        lines.append("")
         return "\n".join(lines)
 
     def _write_visualizations(

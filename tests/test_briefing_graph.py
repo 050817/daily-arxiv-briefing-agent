@@ -74,6 +74,41 @@ class BriefingGraphSkillTest(unittest.TestCase):
         self.assertEqual(summary["one_sentence_summary"], "AI summary.")
         self.assertEqual(summary["evidence_source"], "AI summary grounded in title and abstract only")
 
+    def test_generate_report_insights_can_use_ai_when_enabled(self):
+        class FakeAIReportSkill(BriefingGraphSkill):
+            def _openai_api_key(self) -> str:
+                return "test-key"
+
+            def _call_openai_chat(self, messages, *, timeout_seconds=60):
+                return (
+                    '{"trend_interpretation":"AI trend grounded in selected abstracts.",'
+                    '"recommended_reading_order":["1. Read the GNN paper first because it is ranked highest."],'
+                    '"limitations":["AI limitation: only abstracts and keyword graph were provided."]}'
+                )
+
+        skill = FakeAIReportSkill({"briefing": {"ai_summary_enabled": True}})
+        paper_keywords = skill.extract_keywords(SAMPLE_TOP_K_PAPERS)
+        graph_analysis = skill.analyze_graph(skill.build_keyword_graph(paper_keywords))
+        summaries = [skill._generate_rule_structured_summary(paper, "graph neural networks") for paper in SAMPLE_TOP_K_PAPERS]
+
+        insights = skill.generate_report_insights(
+            "graph neural networks",
+            SAMPLE_TOP_K_PAPERS,
+            summaries,
+            graph_analysis,
+        )
+
+        self.assertEqual(insights["trend_interpretation"], "AI trend grounded in selected abstracts.")
+        self.assertEqual(
+            insights["recommended_reading_order"],
+            ["1. Read the GNN paper first because it is ranked highest."],
+        )
+        self.assertEqual(
+            insights["limitations"],
+            ["AI limitation: only abstracts and keyword graph were provided."],
+        )
+        self.assertIn("AI report insights", insights["evidence_source"])
+
     def test_chat_with_archive_uses_skill_logic_and_persists_messages(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             archive_path = Path(tmpdir)

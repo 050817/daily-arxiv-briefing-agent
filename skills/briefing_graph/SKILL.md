@@ -1,6 +1,6 @@
 ---
 name: arxiv-briefing-graph
-description: "Generate grounded arXiv research briefings with Markdown/PDF reports, keyword co-occurrence graphs, SVG figures, archiving, and archive Q&A."
+description: "Generate arXiv Markdown/PDF briefings, keyword graphs, archives, and file Q&A. Use when the user says 'generate report', 'make PDF', 'draw keyword graph', 'chat with archive', or needs Skill 3 of the daily arXiv workflow."
 author: "050817"
 version: "1.0.0"
 tags:
@@ -9,27 +9,77 @@ tags:
   - pdf
   - visualization
   - archive
+metadata:
+  openclaw:
+    requires:
+      env:
+        - OPENAI_API_KEY
+        - OPENAI_BASE_URL
+        - OPENAI_MODEL
+      bins:
+        - python3
+    primaryEnv: OPENAI_API_KEY
 ---
 
 # arXiv Briefing and Graph Report
 
-Use this skill after papers have been retrieved and ranked. It turns Top-K papers into a readable daily arXiv research briefing, visual keyword analysis, archive files, and grounded file-aware chat responses.
+You are helping the user turn ranked arXiv papers into a readable daily research briefing with Markdown, PDF, keyword graphs, archives, and grounded archive Q&A.
 
-## What It Does
+## When to trigger
 
-This skill reads ranked papers, creates evidence-grounded paper cards, computes keyword and topic relationships, writes a Markdown report, renders a PDF report, saves SVG figures, and supports archive Q&A over generated files.
+Activate when the user says "generate report", "make PDF", "draw keyword graph", "create research briefing", "run Skill 3", "archive this result", "chat with archive", or asks for a daily arXiv briefing from ranked papers.
 
-When `briefing.ai_summary_enabled` is true and an OpenAI-compatible API is configured, the skill uses the model to summarize papers and answer archive questions. Model output must be grounded in the provided title, abstract, metadata, report, PDF text, figure metadata, or archive JSON. If model access is unavailable or fails, use local title/abstract heuristics and local archive search.
+## Workflow
 
-## Inputs
+### Step 1: Gather input
+
+Ask for or infer:
 
 - `query`: User research topic.
-- `top_k_papers`: Ranked papers from Skill 2.
-- `ranked_papers`: Optional full ranked list for context.
+- `input`: Path to Skill 2 output, usually `data/processed/ranked_papers.json`.
+- `top_k`: Number of ranked papers to include.
 - `output`: Markdown report path.
 - `output_pdf`: PDF report path.
 - `figures_dir`: Figure output directory.
-- `archive_dir`: Archive output directory.
+- `archive_dir`: Archive output directory when archiving is requested.
+
+### Step 2: Execute
+
+Run the briefing script:
+
+```bash
+python skills/briefing_graph/skill.py \
+  --input data/processed/ranked_papers.json \
+  --query "graph neural networks" \
+  --top_k 5 \
+  --output outputs/reports/daily_briefing.md \
+  --output-pdf outputs/reports/daily_briefing.pdf
+```
+
+Using the repository sample:
+
+```bash
+python skills/briefing_graph/skill.py \
+  --input examples/sample_ranked_papers.json \
+  --query "graph neural networks" \
+  --output outputs/reports/daily_briefing.md \
+  --output-pdf outputs/reports/daily_briefing.pdf
+```
+
+The skill reads ranked papers, creates evidence-grounded paper cards, computes keyword and topic relationships, writes a Markdown report, renders a PDF report, saves SVG figures, and supports archive Q&A over generated files.
+
+When `briefing.ai_summary_enabled` is true and an OpenAI-compatible API is configured, use the model to summarize papers, generate report-level trend interpretation, recommended reading order, limitations, and answer archive questions. If model access is unavailable or fails, use local title/abstract heuristics, local report rules, and local archive search.
+
+### Step 3: Present results
+
+Report:
+
+- Markdown report path.
+- PDF report path.
+- Generated figure paths.
+- Archive path when archiving is enabled.
+- Whether report-level insights came from the LLM or local rules.
+- Any retrieval warning or empty-result status.
 
 ## Outputs
 
@@ -40,6 +90,7 @@ Return and save:
 - `summaries`: Evidence-grounded summaries and paper cards.
 - `graph_analysis`: Keyword/topic graph data.
 - `figures`: Generated SVG figure paths.
+- `report_insights`: Trend interpretation, recommended reading order, limitations, and evidence source.
 - `archive_id`: Archive folder identifier when archiving is enabled.
 
 Expected files:
@@ -52,7 +103,7 @@ outputs/figures/top_keywords.svg
 archives/<query-and-time>/
 ```
 
-## Report Structure
+## Report structure
 
 The PDF and Markdown report should follow this structure:
 
@@ -93,31 +144,18 @@ Read project defaults from `config.yaml`:
 
 OpenAI-compatible settings may come from `web_app/local_settings.json` or environment variables such as `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_MODEL`.
 
-## Run
+## Error handling
 
-```bash
-python skills/briefing_graph/skill.py \
-  --input data/processed/ranked_papers.json \
-  --query "graph neural networks" \
-  --top_k 5 \
-  --output outputs/reports/daily_briefing.md \
-  --output-pdf outputs/reports/daily_briefing.pdf
-```
+- If the ranked paper input JSON path is missing, ask the user to run Skill 2 first or provide a valid ranked paper file.
+- If there are no papers, generate a clear empty-result report instead of hallucinating content.
+- If PDF generation fails because `reportlab` is missing, ask the user to install dependencies with `python -m pip install -r requirements.txt`.
+- If LLM summarization or report-level insight generation fails, fall back to local rules and continue generating the report.
+- If archive Q&A has no supporting evidence, say the archive does not contain enough evidence.
 
-Using the sample file:
-
-```bash
-python skills/briefing_graph/skill.py \
-  --input examples/sample_ranked_papers.json \
-  --query "graph neural networks" \
-  --output outputs/reports/daily_briefing.md \
-  --output-pdf outputs/reports/daily_briefing.pdf
-```
-
-## Quality Rules
+## Quality rules
 
 - Summaries must use only paper titles, abstracts, and metadata.
 - Unsupported details must be written as `Not mentioned in abstract`.
 - Do not claim novelty, results, datasets, or methods unless the abstract or metadata supports them.
-- If there are no papers, generate a clear empty-result report instead of hallucinating content.
+- LLM-generated trend interpretation, reading order, and limitations must use only selected paper evidence, ranking reasons, and keyword graph data.
 - PDF, Markdown, figures, and archive metadata should remain consistent with one another.
