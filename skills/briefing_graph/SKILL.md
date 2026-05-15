@@ -35,6 +35,8 @@ Activate when the user says "generate report", "make PDF", "draw keyword graph",
 
 Ask for or infer:
 
+For report generation:
+
 - `query`: User research topic.
 - `input`: Path to Skill 2 output, usually `data/processed/ranked_papers.json`.
 - `top_k`: Number of ranked papers to include.
@@ -42,6 +44,13 @@ Ask for or infer:
 - `output_pdf`: PDF report path.
 - `figures_dir`: Figure output directory.
 - `archive_dir`: Archive output directory when archiving is requested.
+
+For Q&A over an existing archive, do not rerun the full workflow. Ask for or infer:
+
+- `archive_path`: Path to an existing archive folder, usually under `archives/<query-and-time>/`.
+- `message`: User question about the archived report, papers, figures, or metadata.
+
+The archive folder should contain any available files from `metadata.json`, `report.md`, `ranked_papers.json`, `raw_papers.json`, and `chat.json`.
 
 ### Step 2: Execute
 
@@ -69,6 +78,8 @@ python skills/briefing_graph/skill.py \
 The skill reads ranked papers, creates evidence-grounded paper cards, computes keyword and topic relationships, writes a Markdown report, renders a PDF report, saves SVG figures, and supports archive Q&A over generated files.
 
 When `briefing.ai_summary_enabled` is true and an OpenAI-compatible API is configured, use the model to summarize papers, generate report-level trend interpretation, recommended reading order, limitations, and answer archive questions. If model access is unavailable or fails, use local title/abstract heuristics, local report rules, and local archive search.
+
+For Q&A over an existing archive, call `chat_with_archive(archive_path, message)` or the equivalent web/API entry point. This path only reads the selected archive and appends the conversation to `chat.json`; it does not rerun Skill 1 retrieval, Skill 2 ranking, or Skill 3 report generation.
 
 ### Step 3: Present results
 
@@ -121,6 +132,13 @@ The PDF and Markdown report should follow this structure:
 ## Archive Q&A
 
 The archive chat logic belongs to this skill. Use `chat_with_archive()` or equivalent project entry points to answer questions about a selected archive.
+
+Inputs for archive Q&A:
+
+- `archive_path`: Path to an existing archive folder.
+- `message`: User question about the archived result.
+
+The skill reads `metadata.json`, `report.md`, `ranked_papers.json`, and `raw_papers.json` from the selected archive when those files are present. The answer and user question are saved back to `chat.json`.
 
 Rules for archive chat:
 

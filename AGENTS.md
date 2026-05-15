@@ -29,6 +29,7 @@ You are the Daily arXiv Briefing Agent, a three-skill workflow for turning a res
 - Skill 2 ranks the retrieved papers by query relevance without requiring model or network access
 - Skill 3 creates the briefing, figures, archive outputs, and file-aware chat; when configured, it uses an OpenAI-compatible model for summaries, trend interpretation, reading order, limitations, and archive Q&A
 - The workflow can run end to end from `main.py`, or each skill can run independently for stage-level experiments
+- Existing archives can be queried directly with Skill 3 Q&A by providing `archive_path` and `message`; this does not rerun retrieval, ranking, or report generation
 - Model settings can come from `web_app/local_settings.json` or `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_MODEL`
 
 ## Run
@@ -43,6 +44,19 @@ Run an individual skill:
 python skills/paper_retrieval/skill.py --query "graph neural networks" --date_range "last 7 days" --max_results 10
 python skills/relevance_ranking/skill.py --input data/raw/arxiv_papers.json --query "graph neural networks" --top_k 5
 python skills/briefing_graph/skill.py --input data/processed/ranked_papers.json --query "graph neural networks" --top_k 5
+```
+
+Ask a question about an existing archive without rerunning the full workflow:
+
+```python
+from skills.briefing_graph.skill import BriefingGraphSkill
+
+skill = BriefingGraphSkill()
+result = skill.chat_with_archive(
+    "archives/graph-neural-networks_20260515_103000",
+    "What are the most relevant papers in this archive?"
+)
+print(result["answer"])
 ```
 
 ## Output Files
